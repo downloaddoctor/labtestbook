@@ -1,0 +1,2927 @@
+:root {
+  --bg: #f5f6f8;
+  --card: #fff;
+  --ink: #1a1d21;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --accent: #2563eb;
+  --accent-ink: #fff;
+  --danger: #b91c1c;
+  --danger-soft: #fee2e2;
+  --danger-soft-hover: #fecaca;
+  --ok: #047857;
+  --warn: #b45309;
+  --upi: #7c3aed;
+  --upi-soft: #ede9fe;
+  --hover: #f3f4f6;
+  --accent-soft: #eef2ff;
+  --topbar-h: 52px;
+  --control-h: 36px;
+  --control-pad-x: 10px;
+  --control-radius: 6px;
+  --shadow-bar: 0 2px 10px rgba(20, 24, 33, 0.1);
+  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+* {
+  box-sizing: border-box;
+}
+/* Unified scrollbars (Chrome/Edge) — themed, natural-looking. */
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #c3c9d2;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9aa3af;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+[hidden] {
+  display: none !important;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+/* Reserve the scrollbar track so the layout width never jumps between a page
+   that overflows and one that doesn't (fixed #statusbar included).
+   `both-edges` mirrors the reserve on the left too, so content stays visually
+   centered instead of being pushed off to one side. */
+html {
+  overflow: hidden;
+}
+body {
+  font: 14px/1.45 var(--font);
+  font-variant-numeric: tabular-nums;
+  background: var(--bg);
+  color: var(--ink);
+}
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+.lbl {
+  display: inline;
+}
+.req {
+  color: var(--danger);
+  font-weight: 600;
+}
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--accent);
+  color: var(--accent-ink);
+  padding: 8px 14px;
+  border-radius: 0 0 6px 0;
+  text-decoration: none;
+}
+.skip-link:focus {
+  left: 0;
+  outline: 2px solid var(--accent-ink);
+  outline-offset: -4px;
+}
+/* Page region gets focus programmatically on route change; keep the outline
+   visible so keyboard users can see where they landed. */
+.page:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.drift-banner {
+  position: fixed;
+  top: var(--topbar-h);
+  left: 10px;
+  right: 10px;
+  z-index: 11;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  padding: 8px 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 4px solid #d97706;
+  border-radius: 8px;
+  box-shadow: var(--shadow-bar);
+}
+.drift-banner[hidden] {
+  display: none;
+}
+.drift-banner span {
+  flex: 1;
+}
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: var(--topbar-h);
+  margin: 0 10px;
+  padding: 0 10px;
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+  border-radius: 0 0 10px 10px;
+  box-shadow: var(--shadow-bar);
+}
+.tabs {
+  display: flex;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-items: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+.tabs .nav-tab {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  margin: 4px 0;
+  font: inherit;
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.tabs .nav-tab:hover {
+  background: var(--hover);
+}
+.tabs .nav-tab.active {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.kbd {
+  margin-left: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0 3px;
+  line-height: 1.4;
+  vertical-align: middle;
+}
+/* Narrow screens: drop the keycap hints so 8 tabs fit without clipping. */
+@media (max-width: 1100px) {
+  .tabs .nav-tab .kbd {
+    display: none;
+  }
+}
+@media (max-width: 820px) {
+  .tabs .nav-tab {
+    padding: 8px 9px;
+  }
+  .whoami {
+    display: none;
+  }
+}
+.primary .kbd,
+button.primary .kbd {
+  color: inherit;
+  border-color: rgba(255, 255, 255, 0.55);
+  opacity: 0.9;
+}
+.tabs .nav-tab.active .kbd {
+  color: var(--accent-ink);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+.register-hints {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  margin-top: 20px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  pointer-events: none;
+}
+.kbd-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  pointer-events: auto;
+}
+#statusbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 30px;
+  margin: 0 10px;
+  padding: 0 10px;
+  background: var(--card);
+  border-top: 1px solid var(--line);
+  border-radius: 10px 10px 0 0;
+  box-shadow: var(--shadow-bar);
+  font-size: 11px;
+  color: var(--muted);
+}
+.statusbar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  overflow: hidden;
+}
+.statusbar-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+#statusbar .status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#statusbar .status::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex: 0 0 auto;
+}
+#statusbar .status.ok::before {
+  background: var(--ok);
+}
+#statusbar .status.err::before {
+  background: var(--danger);
+}
+#statusbar .status.ok {
+  color: var(--ok);
+}
+#statusbar .status.err {
+  color: var(--danger);
+}
+#statusbar button {
+  height: 22px;
+  padding: 0 10px;
+  font-size: 11px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ink);
+  border-radius: 4px;
+}
+#statusbar button:hover {
+  background: var(--hover);
+  border-color: var(--line);
+}
+#update-status.status {
+  font: inherit;
+  font-size: 11px;
+  color: var(--accent);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+#update-status.status::before {
+  background: var(--accent);
+}
+#update-status.status:hover {
+  color: var(--accent);
+  filter: brightness(1.2);
+}
+
+main {
+  /* The one scroll container: a fixed pane between the topbar and statusbar.
+     Its scrollbar lives inside the pane, so fixed overlays (topbar, statusbar,
+     dialog backdrops) always cover the full viewport — no white gutters.
+     Both-edges gutter keeps the content centered and stops it shifting when
+     the pane's scrollbar appears/disappears. */
+  position: fixed;
+  top: var(--topbar-h);
+  bottom: 30px;
+  left: 0;
+  right: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable both-edges;
+  padding: 12px 20px 20px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+form {
+  display: grid;
+  gap: 12px;
+}
+form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+input[type='text'],
+input[type='tel'],
+input[type='number'],
+input[type='date'],
+input[type='datetime-local'],
+input[type='search'],
+input[type='email'],
+input[type='url'],
+input[type='password'],
+select {
+  font: inherit;
+  height: var(--control-h);
+  padding: 0 var(--control-pad-x);
+  border: 1px solid var(--line);
+  border-radius: var(--control-radius);
+  background: #fff;
+  color: var(--ink);
+  line-height: 1.2;
+}
+textarea {
+  font: inherit;
+  padding: 8px var(--control-pad-x);
+  border: 1px solid var(--line);
+  border-radius: var(--control-radius);
+  background: #fff;
+  color: var(--ink);
+}
+input:focus,
+select:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 0px;
+  border-color: var(--accent) !important;
+}
+/* Keyboard focus ring only (not on mouse click) for buttons/links. */
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 1px;
+}
+.suggest-list:focus,
+.suggest-list:focus-visible {
+  outline: none;
+}
+.form-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+button {
+  font: inherit;
+  height: var(--control-h);
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--control-radius);
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+}
+button:hover {
+  background: var(--hover);
+}
+button.primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+button.primary:hover {
+  background: #1d4ed8;
+}
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+.summary {
+  font-size: 12px;
+  color: var(--ink);
+  background: var(--accent-soft);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin: 0 0 12px;
+  font-variant-numeric: tabular-nums;
+}
+/* Keep a keyboard-focused/selected row clear of the sticky topbar when
+   scrollIntoView runs. */
+tbody tr {
+  scroll-margin-top: calc(var(--topbar-h) + 8px);
+  scroll-margin-bottom: 12px;
+}
+tbody tr.active,
+tbody tr.active:hover {
+  background: var(--accent-soft);
+  outline: 3px solid var(--accent);
+  outline-offset: -4px;
+}
+
+.tabs .nav-tab[aria-current='page'] {
+  font-weight: 600;
+}
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: stretch;
+}
+.split-left {
+  align-self: start;
+}
+.split-left,
+.split-right {
+  min-width: 0;
+}
+.split-left {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  padding-bottom: 0;
+}
+.split-right {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.ps-host {
+  width: 100%;
+  min-height: 520px;
+  background: #eef0f3;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 12px;
+  box-sizing: border-box;
+}
+/* Screen preview wrapper: scales the true-mm receipt to fit the pane width.
+   --preview-scale is set by JS (bill.js renderPreview). origin top-center. */
+.ps-host .preview-scale {
+  transform: scale(var(--preview-scale, 1));
+  transform-origin: top center;
+  /* keep layout height proportional to the scaled block */
+  margin-bottom: calc((var(--preview-scale, 1) - 1) * 148.5mm);
+}
+.ps-host .print-receipt {
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+.ps-host iframe {
+  width: 100% !important;
+  height: 520px !important;
+  border: 0;
+  display: block;
+  background: #fff;
+}
+
+#page-print-layout {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--topbar-h) - 28px - 32px);
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.modal[hidden] {
+  display: none !important;
+}
+.modal-card {
+  background: var(--card);
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  max-width: 720px;
+  width: min(92vw, 720px);
+  max-height: 82vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+}
+.modal-head h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+.modal-close {
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  flex: 0 0 auto;
+}
+.modal-close:hover {
+  background: var(--hover);
+  color: var(--ink);
+}
+.modal-hist-btn {
+  margin-left: auto;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0 10px;
+  border-radius: 6px;
+  flex: 0 0 auto;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  margin-right: 8px;
+}
+.modal-hist-btn:hover {
+  background: var(--hover);
+  color: var(--ink);
+}
+.col-ver {
+  width: 48px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.modal-scroll {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  min-height: 0;
+}
+.hx-list {
+  padding: 12px 16px 16px 20px;
+}
+.hx-item {
+  position: relative;
+  padding: 0 0 14px 22px;
+}
+.hx-item::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 14px;
+  bottom: -2px;
+  width: 2px;
+  background: var(--line);
+}
+.hx-item:last-child::before {
+  display: none;
+}
+.hx-dot {
+  position: absolute;
+  left: 1px;
+  top: 5px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.hx-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 14px;
+}
+.hx-date {
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.hx-badge {
+  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.hx-time {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.hx-meta {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.hx-item.hx-active .hx-body {
+  background: var(--accent-soft);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.hx-item {
+  cursor: pointer;
+}
+.modal-card table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.modal-card table th,
+.modal-card table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+}
+.modal-card table thead th {
+  position: sticky;
+  top: 0;
+  background: #fafbfc;
+  z-index: 1;
+}
+.row-click {
+  cursor: pointer;
+}
+.row-click:hover {
+  background: var(--accent-soft);
+}
+
+.modal-dialog {
+  border: none;
+  padding: 0;
+  background: transparent;
+  max-width: none;
+  max-height: none;
+}
+.modal-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.35);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.modal-dialog.modal-wide .modal-card {
+  width: min(96vw, 900px);
+}
+.modal-dialog .modal-card {
+  width: min(92vw, 560px);
+  /* Cap to viewport so the footer (Close/Save) is always reachable. */
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.modal-dialog .modal-card .modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+.modal-body {
+  padding: 16px 20px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+/* Stacked form fields in a dialog body need vertical rhythm — otherwise
+   adjacent labels touch. Applies to test-modal, catalog-modal, payment-dialog. */
+.modal-dialog .modal-body > label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+}
+.modal-dialog .modal-body > label + label {
+  margin-top: 14px;
+}
+.modal-body dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 12px;
+}
+.modal-body dt {
+  color: var(--muted);
+}
+.modal-body dd {
+  margin: 0;
+}
+/* Bill view modal: customer header, clean price table, totals stack, payment badge. */
+#bill-view-dialog .modal-card {
+  width: min(92vw, 480px);
+}
+.bv-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  margin: 0 0 14px;
+  background: var(--accent-soft);
+  border-radius: 8px;
+}
+.bv-name {
+  font-weight: 600;
+  font-size: 15px;
+}
+.bv-mob {
+  color: var(--muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+#bill-view-tests {
+  border-radius: 8px;
+  margin: 0 0 14px;
+}
+#bill-view-tests th:last-child,
+#bill-view-tests td:last-child {
+  text-align: right;
+}
+#bill-view-tests th:last-child {
+  width: 110px;
+}
+.bv-paytxt {
+  font-weight: 600;
+  white-space: nowrap;
+}
+.bv-paytxt.paid {
+  color: var(--ok);
+}
+.bv-paytxt.unpaid {
+  color: var(--danger);
+}
+#bill-view-tests td {
+  font-size: 14px;
+}
+/* Totals live inside the bill table (second tbody), same look as the New Bill page. */
+#bill-view-tests .bv-tot td {
+  background: #fafbfc;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+#bill-view-tests .bv-tot tr:last-child td {
+  border-bottom: 0;
+}
+#bill-view-tests .tot-label {
+  color: var(--muted);
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+#bill-view-tests .tot-num {
+  text-align: right;
+}
+#bill-view-tests .tot-grand td {
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 15px;
+}
+.bv-totals {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 4px;
+  margin: 0 0 14px;
+  font-variant-numeric: tabular-nums;
+}
+.bv-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--muted);
+}
+.bv-row span:last-child {
+  color: var(--ink);
+}
+.bv-row.bv-disc span:last-child {
+  color: var(--ok);
+}
+.bv-row.bv-cost {
+  font-size: 12px;
+}
+.bv-row.bv-grand {
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.bv-pay {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 13px;
+}
+.bv-pay-label {
+  color: var(--muted);
+}
+.bv-badge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.bv-badge.paid {
+  background: #d1fae5;
+  color: var(--ok);
+}
+.bv-badge.partial {
+  background: #fef3c7;
+  color: #92400e;
+}
+.bv-badge.unpaid {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 12px 20px 16px;
+  border-top: 1px solid var(--line);
+}
+.modal-actions button {
+  height: var(--control-h);
+  padding: 0 14px;
+}
+/* Footer control groups (label + select) sit left; buttons right. */
+.modal-actions > label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: auto;
+  min-width: 0;
+}
+.modal-actions > label select {
+  max-width: 200px;
+  min-width: 0;
+}
+.modal-actions > .spacer {
+  flex: 1 1 auto;
+}
+.log-view {
+  margin: 0;
+  max-height: min(60vh, 480px);
+  overflow: auto;
+  white-space: pre;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.45;
+  background: var(--bg, #f7f7f7);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+
+.toolbar-search {
+  scroll-margin-top: calc(var(--topbar-h) + 10px);
+  height: var(--control-h);
+  padding: 0 var(--control-pad-x);
+  border: 1px solid var(--line);
+  border-radius: var(--control-radius);
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  min-width: 220px;
+  max-width: 320px;
+}
+.toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.toolbar .hint {
+  margin-left: auto;
+}
+.ghost-btn {
+  height: var(--control-h);
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+}
+.ghost-btn:hover {
+  color: inherit;
+  border-color: var(--accent);
+}
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--control-h);
+  padding: 0;
+}
+/* ---------- topbar right / whoami (ported from tokenbook) ---------- */
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+.whoami {
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  max-width: 40vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.inline {
+  display: inline-flex;
+  flex-direction: row;
+  gap: 6px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--muted);
+}
+.inline input,
+.inline select {
+  height: var(--control-h);
+  padding: 0 var(--control-pad-x);
+}
+.inline input[type='search'] {
+  min-width: 220px;
+}
+
+input[type='search'] {
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 0;
+}
+input[type='search']::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px 10px 0 0;
+  overflow: hidden;
+}
+/* List tables: fixed layout so columns don't reflow when rows change
+   (filter/paginate). Column widths come from per-table <colgroup> where set. */
+table[data-list-nav] {
+  table-layout: fixed;
+}
+table[data-list-nav] th,
+table[data-list-nav] td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+th,
+td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+/* Column alignment driven from CSS by position (no per-cell classes). */
+th.num,
+td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+/* Bills: Bill No / Date / Time centered; Name left; Total right; Payment centered. */
+#bills-table th,
+#bills-table td {
+  text-align: center;
+}
+#bills-table th:nth-child(5),
+#bills-table td:nth-child(5) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+#bills-table th:nth-child(4),
+#bills-table td:nth-child(4) {
+  text-align: left;
+}
+/* Tests: Price / Merchant right; Ver center. */
+#test-table th:nth-child(2),
+#test-table td:nth-child(2),
+#test-table th:nth-child(3),
+#test-table td:nth-child(3) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+#test-table th:nth-child(4),
+#test-table td:nth-child(4) {
+  text-align: center;
+}
+/* Users: Role/Status centered; dates left; actions left. */
+#users-table th:nth-child(1),
+#users-table td:nth-child(1),
+#users-table th:nth-child(6),
+#users-table td:nth-child(6) {
+  text-align: left;
+}
+/* Labs / Doctors: Ver center. */
+#lab-table th:nth-child(2),
+#lab-table td:nth-child(2),
+#doctor-table th:nth-child(2),
+#doctor-table td:nth-child(2) {
+  text-align: center;
+}
+/* Patients: everything centered except Name (left) and Pending (right). */
+#users-table th,
+#users-table td,
+#patients-table th,
+#patients-table td {
+  text-align: center;
+}
+#patients-table th:nth-child(2),
+#patients-table td:nth-child(2) {
+  text-align: left;
+}
+#patients-table th:nth-child(8),
+#patients-table td:nth-child(8) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+th {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background: #fafbfc;
+}
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+.empty {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 8px 0 12px;
+}
+/* Busy state while an async list render is in flight. */
+table[aria-busy='true'].is-loading,
+table.is-loading {
+  opacity: 0.5;
+  transition: opacity 0.12s ease;
+}
+
+.pager {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+#toast-host {
+  position: fixed;
+  bottom: 40px;
+  left: 20px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+  max-width: min(360px, 90vw);
+}
+.toast {
+  pointer-events: auto;
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--muted);
+  border-radius: 8px;
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 10px 12px 10px 14px;
+  font-size: 13px;
+  line-height: 18px;
+  font-variant-numeric: normal;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+.toast.in {
+  opacity: 1;
+  transform: translateX(0);
+}
+.toast.ok {
+  border-left-color: var(--ok);
+}
+.toast.err {
+  border-left-color: var(--danger);
+}
+.toast.warn {
+  border-left-color: var(--warn);
+}
+.toast .t-close {
+  flex: 0 0 auto;
+  order: 2;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.toast .t-close:hover {
+  background: var(--hover);
+  color: var(--ink);
+}
+.toast > span {
+  flex: 1 1 auto;
+  order: 1;
+  min-width: 0;
+  padding-right: 2px;
+}
+
+#bill-form {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px 12px;
+  align-items: start;
+}
+#bill-form .span-2 {
+  grid-column: span 2;
+}
+#bill-form .span-3 {
+  grid-column: span 3;
+}
+#bill-form .span-6 {
+  grid-column: 1 / -1;
+}
+#bill-form > label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--muted);
+  min-width: 0;
+}
+#bill-form > label > input,
+#bill-form > label > select {
+  width: 100%;
+  height: var(--control-h);
+  padding: 0 var(--control-pad-x);
+  border: 1px solid var(--line);
+  border-radius: var(--control-radius);
+  font: inherit;
+  color: var(--ink);
+  background: var(--card);
+}
+#bill-form .form-row {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  gap: 8px;
+  padding-top: 10px;
+}
+#bill-form #form-msg {
+  grid-column: 1 / -1;
+}
+
+#bill-cust-name {
+  text-transform: uppercase;
+}
+#bill-seq {
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+/* Totals live INSIDE #bill-test-table as a second tbody, so the bill reads as
+   one continuous table (same columns, same borders). */
+#bill-test-table th.num,
+#bill-test-table td.num {
+  text-align: right;
+}
+#bill-test-table .bill-totals-body td {
+  background: #fafbfc;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+#bill-test-table .bill-totals-body tr:last-child td {
+  border-bottom: 0;
+}
+#bill-test-table .tot-label {
+  color: var(--muted);
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+/* Test rows: click to remove. Red cue only when the row is FOCUSED or hovered
+   (never for a merely "selected" row that has no focus). Outline stays inside. */
+#bill-tests-body tr {
+  cursor: pointer;
+}
+#bill-tests-body tr:focus {
+  outline: none;
+}
+#bill-tests-body tr:hover {
+  background: #fef2f2;
+}
+#bill-tests-body tr:focus td {
+  border-top: 2px solid #dc2626;
+  border-bottom: 2px solid #dc2626;
+  background: #fef2f2;
+}
+#bill-tests-body tr:focus td:first-child {
+  border-left: 2px solid #dc2626;
+}
+#bill-tests-body tr:focus td:last-child {
+  border-right: 2px solid #dc2626;
+}
+#bill-tests-body tr:focus td,
+#bill-tests-body tr:hover td {
+  color: #b91c1c;
+}
+#bill-tests-body tr:focus td:first-child::after,
+#bill-tests-body tr:hover td:first-child::after {
+  content: '×';
+  color: #dc2626;
+  font-weight: 700;
+  margin-left: 8px;
+}
+#bill-test-table .tot-num {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+#bill-test-table .tot-inputs {
+  display: inline-flex;
+  gap: 6px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+#bill-test-table .tot-inputs input,
+#bill-test-table .tot-inputs select {
+  width: 4.5em;
+  height: 26px;
+  padding: 0 6px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+}
+#bill-test-table .tot-inputs select {
+  width: auto;
+}
+#bill-test-table .tot-inputs .tot-pct,
+#bill-test-table .tot-inputs .tot-cur {
+  color: var(--muted, #6b7280);
+  font-variant-numeric: tabular-nums;
+  align-self: center;
+  line-height: 1;
+}
+#bill-test-table .tot-inputs #bill-discount-per {
+  width: 5em;
+}
+#bill-test-table .tot-inputs #bill-discount-no {
+  width: 6.5em;
+}
+#bill-test-table .tot-inputs .ctc-btn {
+  height: 26px;
+  padding: 0 8px;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+#bill-test-table .tot-inputs .ctc-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+#bill-test-table .tot-inputs input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+#bill-test-table .tot-inputs input[type='number']::-webkit-outer-spin-button,
+#bill-test-table .tot-inputs input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+#bill-test-table .tot-num > #tot-discount,
+#bill-test-table .tot-num > #tot-gst {
+  display: inline-block;
+  min-width: 4em;
+}
+#bill-test-table .tot-grand td {
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 15px;
+  border-bottom: 0;
+}
+
+.tag-default {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #166534;
+  background: #dcfce7;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+.col-default {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+}
+.default-toggle {
+  padding: 3px 10px;
+  font-size: 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--muted);
+  cursor: pointer;
+}
+.default-toggle.on {
+  color: #166534;
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.autofill-field {
+  position: relative;
+}
+.suggest-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin: 4px 0 0;
+  padding: 4px 0;
+  list-style: none;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 20;
+}
+/* Hide the suggest dropdown's scrollbar (Chrome/Edge) — it still scrolls,
+   but the compact list stays visually clean. */
+.suggest-list {
+  scrollbar-width: none;
+}
+.suggest-list::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+.suggest-list li {
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.suggest-list li:hover,
+.suggest-list li.hl {
+  background: #e0e7ff;
+}
+.suggest-list li .s-main {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.suggest-list li .s-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.suggest-list li .s-ago {
+  flex: 0 0 auto;
+  min-width: 5ch;
+  text-align: right;
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.suggest-list li .s-sub {
+  display: flex;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.suggest-list li .s-mob {
+  flex: 0 0 auto;
+  min-width: 11ch;
+}
+.suggest-list li .s-age {
+  flex: 0 0 auto;
+  min-width: 4ch;
+}
+
+@media (max-width: 860px) {
+  .split {
+    grid-template-columns: 1fr;
+  }
+  .ps-host,
+  .ps-host iframe {
+    min-height: 420px;
+    height: 420px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  #bill-form {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  #bill-form .span-2 {
+    grid-column: span 2;
+  }
+}
+
+/* ---- print pipeline (#print-root) + bill receipt format ---- */
+
+/* Screen: the print root is never visible. */
+#print-root {
+  display: none;
+}
+
+.print-receipt {
+  display: flex;
+  width: 210mm;
+  height: 148.5mm;
+  box-sizing: border-box;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  color: #000;
+}
+
+.print-receipt .pr-copy {
+  box-sizing: border-box;
+  padding: 5mm 6mm;
+  overflow: hidden;
+}
+
+.print-receipt .pr-merchant {
+  width: 38%;
+  border-right: 0;
+  padding-right: 6mm;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    #000 0,
+    #000 1.2mm,
+    transparent 1.2mm,
+    transparent 3.4mm
+  );
+  background-size: 0.2mm 100%;
+  background-position: right top;
+  background-repeat: no-repeat;
+}
+
+.print-receipt .pr-customer {
+  width: 62%;
+  padding-left: 6mm;
+}
+
+.print-receipt .pr-company {
+  margin: 0 0 0.5mm 0;
+  text-align: center;
+  font-size: 14pt;
+  font-weight: 700;
+  letter-spacing: 0.3pt;
+}
+.print-receipt .pr-diagnosed {
+  margin: 0;
+  text-align: center;
+  font-size: 7.5pt;
+  color: #222;
+}
+.print-receipt .pr-row2 {
+  display: flex;
+  justify-content: space-between;
+  gap: 4mm;
+  font-size: 8pt;
+  line-height: 1.5;
+}
+.print-receipt .pr-row2-top {
+  margin-top: 2mm;
+  flex-wrap: wrap;
+}
+.print-receipt .pr-tick {
+  display: inline-block;
+  margin-right: 1.5mm;
+  font-weight: 700;
+  color: #000;
+}
+
+.print-receipt .pr-meta {
+  margin: 0 0 2mm 0;
+  font-size: 7pt;
+  line-height: 1.35;
+}
+
+.print-receipt .pr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 8pt;
+  margin-top: 4mm;
+}
+
+.print-receipt .pr-table th {
+  text-align: left;
+  font-weight: 600;
+  font-size: 7pt;
+  letter-spacing: 0.3pt;
+  text-transform: uppercase;
+  color: #000;
+  background: transparent;
+  border-top: 0.2mm solid #000;
+  border-bottom: 0.2mm solid #000;
+  padding: 0.6mm 0;
+}
+
+.print-receipt table,
+.print-receipt th,
+.print-receipt td {
+  border: 0;
+  background: transparent;
+  border-radius: 0;
+  overflow: visible;
+}
+.print-receipt .pr-table td {
+  padding: 0.7mm 0;
+  vertical-align: top;
+  border-bottom: 0;
+}
+
+.print-receipt .pr-table tr.tot-first td {
+  border-top: 0.2mm dashed #000;
+  padding-top: 1mm;
+}
+
+.print-receipt .pr-table th.c-price {
+  text-align: right;
+}
+.print-receipt .pr-table .c-price,
+.print-receipt .pr-table .c-total {
+  text-align: right;
+  white-space: nowrap;
+  padding-left: 2mm;
+}
+
+.print-receipt .pr-grand {
+  margin: 2mm 0 0 0;
+  text-align: right;
+  font-size: 9pt;
+  font-weight: 600;
+}
+
+.print-receipt .pr-payment {
+  margin: 1mm 0 0 0;
+  text-align: right;
+  font-size: 7pt;
+  font-weight: 600;
+  letter-spacing: 0.5pt;
+}
+
+/* History toolbar: date controls + segmented mode picker. */
+#page-bills .toolbar .summary-btn-right {
+  margin-left: 0;
+}
+#page-bills .toolbar input[type='date'],
+#page-bills .toolbar input[type='month'],
+#page-bills .toolbar button {
+  height: var(--control-h);
+  padding: 0 var(--control-pad-x);
+  border: 1px solid var(--line);
+  border-radius: var(--control-radius);
+  background: #fff;
+  font: inherit;
+  color: var(--ink);
+}
+/* Keep the date input from collapsing next to the segmented control. */
+#bills-mode + input {
+  min-width: 150px;
+}
+.range-sep {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0 -4px;
+}
+/* Beat `#page-bills .toolbar button` so the segmented pills stay clean. */
+#page-bills .toolbar .seg {
+  height: var(--control-h);
+  padding: 2px;
+  gap: 2px;
+}
+#page-bills .toolbar .seg .seg-btn {
+  height: 100%;
+  padding: 0 14px;
+  border: 0;
+  background: transparent;
+  border-radius: calc(var(--control-radius) - 2px);
+  color: var(--muted);
+}
+#page-bills .toolbar .seg .seg-btn.active {
+  background: #fff;
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+#page-bills .toolbar input[type='date'],
+#page-bills .toolbar input[type='month'] {
+  font-variant-numeric: tabular-nums;
+}
+#page-bills .toolbar button {
+  cursor: pointer;
+}
+#page-bills .toolbar button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Segmented control (Day/Month/Range) — ported from tokenbook. */
+.seg {
+  display: inline-flex;
+  align-items: stretch;
+  height: var(--control-h);
+  padding: 2px;
+  gap: 2px;
+  border: 1px solid var(--line);
+  border-radius: var(--control-radius);
+  background: var(--bg, #f3f4f6);
+}
+.seg .seg-btn {
+  border: 0;
+  background: transparent;
+  padding: 0 14px;
+  height: 100%;
+  font: inherit;
+  font-size: 13px;
+  color: var(--muted);
+  border-radius: calc(var(--control-radius) - 2px);
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    color 0.12s;
+}
+.seg .seg-btn:hover {
+  color: var(--ink);
+}
+.seg .seg-btn.active {
+  background: #fff;
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+/* Timeline list (patient history modal) — ported from tokenbook. */
+.hx-list {
+  padding: 12px 16px 16px 20px;
+}
+.hx-item {
+  position: relative;
+  padding: 0 0 14px 22px;
+  cursor: pointer;
+}
+.hx-item::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 14px;
+  bottom: -2px;
+  width: 2px;
+  background: var(--line);
+}
+.hx-item:last-child::before {
+  display: none;
+}
+.hx-dot {
+  position: absolute;
+  left: 1px;
+  top: 5px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.hx-item.unpaid .hx-dot {
+  background: var(--danger);
+  box-shadow: 0 0 0 3px var(--danger-soft);
+}
+.hx-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 14px;
+}
+.hx-date {
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.hx-badge {
+  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.hx-badge.badge-partial {
+  background: #fef3c7;
+  color: #92400e;
+}
+.hx-badge.badge-settled {
+  background: #d1fae5;
+  color: var(--ok);
+}
+.hx-item.unpaid .hx-badge,
+.hx-badge.badge-unpaid {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+#patients-table {
+  table-layout: fixed;
+  width: 100%;
+}
+#patients-table th,
+#patients-table td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 8px 6px;
+}
+/* Keep the narrow numeric headers legible (Age/Gender/Wt/Bills). */
+@media (max-width: 1100px) {
+  #patients-table th:nth-child(4),
+  #patients-table td:nth-child(4),
+  #patients-table th:nth-child(5),
+  #patients-table td:nth-child(5),
+  #patients-table th:nth-child(6),
+  #patients-table td:nth-child(6),
+  #patients-table th:nth-child(7),
+  #patients-table td:nth-child(7) {
+    font-size: 12px;
+  }
+}
+#patients-table tbody tr.row-due {
+  background: var(--danger-soft);
+}
+#patients-table tbody tr.row-due.active {
+  outline-color: var(--danger);
+}
+#patients-table tbody tr.row-due:hover {
+  background: var(--danger-soft-hover);
+}
+#patients-table thead th.sortable {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+#patients-table thead th.sortable::after {
+  content: '↕';
+  margin-left: 4px;
+  opacity: 0.35;
+  font-size: 11px;
+}
+#patients-table thead th.sortable.sorted::after {
+  content: '↑';
+  opacity: 1;
+  color: var(--accent);
+}
+#patients-table thead th.sortable.sorted.sorted-desc::after {
+  content: '↓';
+}
+#patients-table td.due {
+  color: var(--danger);
+  font-weight: 600;
+}
+.hx-time {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.hx-meta {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Print: hide the app, show only the print root.
+   Paper size is NOT forced here (size: auto) so the print dialog's paper
+   dropdown drives it. The receipt is a fixed 210mm x 148.5mm block:
+     - A5 loaded  -> fills the sheet
+     - A4 loaded  -> sits in the top half (cut in half after printing)
+     - Letter     -> sits top-left, small side margins
+   Operator note: set Margins = None in the print dialog for a flush receipt. */
+@media print {
+  @page {
+    size: auto;
+    margin: 0;
+  }
+
+  body > *:not(#print-root) {
+    display: none !important;
+  }
+
+  #print-root {
+    display: block !important;
+  }
+
+  .print-receipt .pr-tick {
+    color: #000;
+  }
+  .print-receipt {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* ---------- revision timeline (revisions.js) ---------- */
+.hx-item {
+  position: relative;
+  padding: 0 0 14px 22px;
+}
+.hx-item::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 14px;
+  bottom: -2px;
+  width: 2px;
+  background: var(--line);
+}
+.hx-item:last-child::before {
+  display: none;
+}
+.hx-dot {
+  position: absolute;
+  left: 1px;
+  top: 5px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.hx-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 14px;
+}
+.hx-date {
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.hx-badge {
+  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.hx-time {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.hx-meta {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.picker-models {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.pill {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.hx-list {
+  padding: 12px 16px 16px 20px;
+}
+.rev-changes {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+}
+.rev-change {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+}
+.rev-label {
+  min-width: 84px;
+  color: var(--muted);
+}
+.rev-val {
+  color: inherit;
+}
+.hx-badge.badge-current {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.hx-entity {
+  font-weight: 500;
+}
+.hx-badge.badge-superseded {
+  opacity: 0.7;
+}
+.hx-badge.badge-hidden {
+  background: rgba(200, 60, 60, 0.12);
+  color: #c0392b;
+}
+.hx-badge.badge-user {
+  background: var(--surface-2, rgba(127, 127, 127, 0.14));
+  color: var(--muted);
+  font-weight: 500;
+}
+.rev-change.expandable {
+  flex-direction: column;
+  align-items: stretch;
+}
+.rev-ref {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  height: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+}
+.rev-ref:hover .rev-val {
+  text-decoration: underline;
+}
+.rev-ref::before {
+  content: '▸';
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.4;
+}
+.rev-change.expanded > .rev-ref::before {
+  content: '▾';
+}
+.rev-ref-body[hidden] {
+  display: none;
+}
+.rev-ref-body {
+  margin: 2px 0 2px 14px;
+  padding-left: 8px;
+  border-left: 2px solid var(--surface-2, rgba(127, 127, 127, 0.2));
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* ---------- summary chips (History totals) ---------- */
+.summary-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 0 12px;
+  align-items: stretch;
+}
+.summary-grid .stat-group {
+  display: flex;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+/* 3 bill-count chips / 5 money chips -> group widths are 3/8 and 5/8. */
+.summary-grid .stat-group {
+  flex: 2 1 0;
+}
+.summary-grid .stat-group:nth-child(2) {
+  flex: 6 1 0;
+}
+.summary-grid .stat-group:nth-child(3) {
+  flex: 4 1 0;
+}
+/* 4th group = second row with the remaining figures. */
+.summary-grid .stat-group:nth-child(4) {
+  flex: 1 1 100%;
+}
+
+.summary-grid .stat {
+  flex: 1 1 0;
+  min-width: 72px;
+  padding: 8px 12px;
+  border-right: 1px solid var(--line);
+}
+.summary-grid .stat:last-child {
+  border-right: 0;
+}
+.summary-grid .stat-label {
+  white-space: nowrap;
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+.summary-grid .stat-value {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.summary-grid .stat.accent .stat-value {
+  color: var(--accent);
+}
+.summary-grid .stat.ok .stat-value {
+  color: var(--ok);
+}
+.summary-grid .stat.warn .stat-value {
+  color: var(--warn);
+}
+.summary-grid .stat.err .stat-value {
+  color: var(--danger);
+}
+.summary-grid .stat.upi .stat-value {
+  color: var(--upi);
+}
+table.gl td .upi {
+  color: var(--upi);
+}
+.summary-btn-right {
+  margin-left: auto;
+}
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+#ledger-gl th:nth-child(1),
+#ledger-gl td:nth-child(1),
+#ledger-gl th:nth-child(3),
+#ledger-gl td:nth-child(3) {
+  text-align: center;
+}
+#ledger-gl th:nth-child(1),
+#ledger-gl td:nth-child(1) {
+  white-space: nowrap;
+}
+.hx-badge.gl-kind-ok {
+  background: #dcfce7;
+  color: var(--ok);
+}
+.hx-badge.gl-kind-warn {
+  background: #fef3c7;
+  color: var(--warn);
+}
+.hx-badge.gl-kind-upi {
+  background: var(--upi-soft);
+  color: var(--upi);
+}
+.hx-badge.gl-kind-err {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.hx-badge.gl-kind-accent {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.ledger-toolbar {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.ledger-toolbar #ledger-mode {
+  justify-self: start;
+}
+.ledger-pager-center {
+  justify-content: center;
+  margin: 0;
+}
+.ledger-toolbar #ledger-book {
+  justify-self: end;
+}
+#bills-day-label,
+#ledger-page-hint {
+  font: inherit;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--card);
+  padding: 4px 8px;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+  min-width: 120px;
+  text-align: center;
+}
+#page-bills .toolbar {
+  justify-content: space-between;
+}
+#page-bills .toolbar .hint {
+  margin-left: unset;
+}
+
+/* ---------- ledger scope chip + all-time bar ---------- */
+.ledger-scope {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+.ledger-scope[hidden] {
+  display: none;
+}
+.ledger-scope .scope-chip {
+  display: inline-flex;
+  align-items: center;
+  height: var(--control-h);
+  padding: 0 14px;
+  border-radius: var(--control-radius);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+.ledger-scope .scope-summary-btn {
+  margin-left: auto;
+}
+.ledger-scope .scope-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+.ledger-scope .scope-actions[hidden] {
+  display: none;
+}
+.ledger-scope .scope-summary-btn + .scope-actions {
+  margin-left: 0;
+}
+.ledger-scope .scope-act {
+  font-weight: 600;
+  font-size: 13px;
+  height: var(--control-h);
+  padding: 0 14px;
+  border-radius: var(--control-radius);
+  border: 1px solid transparent;
+  box-shadow: 0 1px 2px rgba(20, 24, 33, 0.12);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ledger-scope .scope-act.act-ok {
+  background: var(--ok);
+  border-color: var(--ok);
+  color: #fff;
+}
+.ledger-scope .scope-act.act-ok:hover {
+  background: #065f46;
+}
+.ledger-scope .scope-act.act-accent {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.ledger-scope .scope-act.act-accent:hover {
+  background: #1d4ed8;
+}
+.ledger-scope .scope-act.act-warn {
+  background: var(--warn);
+  border-color: var(--warn);
+  color: #fff;
+}
+.ledger-scope .scope-act.act-warn:hover {
+  background: #92400e;
+}
+.ledger-scope .scope-act.act-plain {
+  background: #fff;
+  border-color: #cbd5e1;
+  color: var(--ink);
+}
+.ledger-scope .scope-act.act-plain:hover {
+  background: var(--bg);
+  border-color: #94a3b8;
+}
+
+/* ---------- ledger admin summary ---------- */
+.admin-sum {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+  margin: 0 0 12px;
+}
+.admin-sum[hidden] {
+  display: none;
+}
+.admin-sum .sum-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.admin-sum .sum-title {
+  margin: 0;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+}
+.admin-sum .sum-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: -1px;
+}
+.admin-sum .stat {
+  flex: 1 1 80px;
+  padding: 8px 12px;
+  border-right: 1px solid var(--line);
+  border-top: 1px solid var(--line);
+}
+.admin-sum .stat:last-child {
+  border-right: 0;
+}
+.admin-sum .stat-label {
+  display: block;
+  white-space: nowrap;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+.admin-sum .stat-value {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.admin-sum .stat.accent .stat-value {
+  color: var(--accent);
+}
+.admin-sum .stat.ok .stat-value {
+  color: var(--ok);
+}
+.admin-sum .stat.warn .stat-value {
+  color: var(--warn);
+}
+.admin-sum .stat.err .stat-value {
+  color: var(--danger);
+}
+.admin-sum .stat.upi .stat-value {
+  color: var(--upi);
+}
+.admin-sum .sum-top {
+  list-style: none;
+  margin: 0;
+  padding: 4px 12px 8px;
+}
+.admin-sum .sum-top li {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+  border-bottom: 1px dashed var(--line);
+  font-variant-numeric: tabular-nums;
+}
+.admin-sum .sum-top li:last-child {
+  border-bottom: 0;
+}
+.admin-sum .sum-top-amt {
+  font-weight: 600;
+  color: var(--danger);
+}
+.admin-sum .sum-card > .hint {
+  margin: 0;
+  padding: 8px 12px;
+}
+
+/* ---------- ledger flow trees ---------- */
+.admin-sum .flow-tree,
+.admin-sum .flow-kids {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.admin-sum .flow-tree {
+  padding: 8px 12px 10px;
+}
+.admin-sum .flow-kids {
+  margin-left: 11px;
+  padding-left: 14px;
+  border-left: 2px solid var(--line);
+}
+.admin-sum .flow-node {
+  position: relative;
+}
+.admin-sum .flow-kids > .flow-node::before {
+  content: '';
+  position: absolute;
+  left: -14px;
+  top: 14px;
+  width: 12px;
+  border-top: 2px solid var(--line);
+}
+.admin-sum .flow-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 3px 0;
+  font-variant-numeric: tabular-nums;
+}
+.admin-sum .flow-op {
+  width: 14px;
+  text-align: center;
+  font-weight: 700;
+  color: var(--muted);
+}
+.admin-sum .flow-label {
+  flex: 1 1 auto;
+  font-size: 13px;
+  color: var(--ink);
+}
+.admin-sum .flow-val {
+  font-weight: 600;
+  color: var(--ink);
+}
+.admin-sum .flow-val.accent {
+  color: var(--accent);
+}
+.admin-sum .flow-val.ok {
+  color: var(--ok);
+}
+.admin-sum .flow-val.warn {
+  color: var(--warn);
+}
+.admin-sum .flow-val.err {
+  color: var(--danger);
+}
+.admin-sum .flow-val.upi {
+  color: var(--upi);
+}
+
+/* ---------- ledger (book pages) ---------- */
+table.gl {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+table.gl th,
+table.gl td {
+  padding: 6px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+table.gl th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  border-bottom: 2px solid var(--ink);
+}
+
+/* Ledger: column widths + alignment by position (no per-cell classes). */
+#ledger-gl {
+  table-layout: fixed;
+}
+#ledger-gl th,
+#ledger-gl td {
+  width: 140px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+#ledger-gl th:nth-child(1),
+#ledger-gl td:nth-child(1) {
+  text-align: center;
+  white-space: nowrap;
+}
+#ledger-gl th:nth-child(2),
+#ledger-gl td:nth-child(2) {
+  width: auto;
+  text-align: left;
+}
+#ledger-gl th:nth-child(7),
+#ledger-gl td:nth-child(7),
+#ledger-gl th:nth-child(8),
+#ledger-gl td:nth-child(8) {
+  width: 110px;
+}
+
+#ledger-gl th:nth-child(3),
+#ledger-gl td:nth-child(3),
+#ledger-gl th:nth-child(4),
+#ledger-gl td:nth-child(4) {
+  width: 96px;
+  text-align: center;
+}
+
+table.gl td.gl-date,
+table.gl td.gl-ref,
+table.gl td.gl-note {
+  color: var(--muted);
+}
+table.gl td.strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+table.gl td.warn,
+table.gl td .warn {
+  color: var(--warn);
+}
+table.gl td .ok,
+table.gl td .pos {
+  color: var(--ok);
+}
+table.gl td .neg {
+  color: var(--danger);
+}
+table.gl td .err {
+  color: var(--danger);
+}
+table.gl td.pos {
+  color: var(--ok);
+}
+table.gl td.neg {
+  color: var(--danger);
+}
+table.gl tr.gl-open td,
+table.gl tr.gl-close td {
+  background: var(--bg);
+  font-style: italic;
+}
+table.gl tr.gl-total td {
+  border-top: 2px solid var(--ink);
+  border-bottom: 3px double var(--ink);
+  font-weight: 600;
+}
+table.gl caption.gl-caption {
+  text-align: left;
+  padding: 0;
+  font-size: 14px;
+  background: transparent;
+  border: 0;
+}
+table.gl tr.gl-credit td {
+  background: rgba(255, 170, 0, 0.08);
+}
+h3.gl-title {
+  margin: 12px 0 6px;
+  font-size: 15px;
+}
+table.gl tr.gl-entry:hover td {
+  background: var(--bg);
+}
+
+.family-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 12px;
+  margin: 10px 0 14px;
+}
+.family-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  grid-template-rows: auto 1fr;
+  align-content: stretch;
+  align-items: start;
+  column-gap: 12px;
+  row-gap: 8px;
+  padding: 12px 14px 32px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+.family-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.09);
+  transform: translateY(-1px);
+}
+.family-card.head {
+  border-left-color: var(--accent);
+  background: var(--accent-soft);
+}
+.family-card.has-due {
+  border-left-color: var(--warn);
+}
+.family-card .family-avatar {
+  grid-row: 1;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 17px;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.family-card:not(.head) .family-avatar {
+  background: #e5e7eb;
+  color: #374151;
+}
+.family-card .family-top {
+  min-width: 0;
+}
+.family-card .family-name {
+  font-weight: 600;
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.family-card .family-role {
+  font-size: 12px;
+  opacity: 0.7;
+}
+.family-card .family-badge {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  margin: 0;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.family-card:not(.head) .family-badge {
+  background: #e5e7eb;
+  color: #374151;
+}
+.family-card .family-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: flex-start;
+  align-self: start;
+  gap: 6px;
+}
+.family-card .family-stat {
+  align-self: flex-start;
+  white-space: nowrap;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  background: rgba(0, 0, 0, 0.05);
+}
+.family-card .family-stat.warn {
+  color: var(--warn);
+  background: rgba(180, 83, 9, 0.12);
+  font-weight: 600;
+}
+.picked-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  margin-top: 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  background: var(--accent-soft);
+}
+.picked-card.empty {
+  border: 1px dashed var(--line);
+  background: transparent;
+}
+.picked-card .picked-empty {
+  font-size: 13px;
+  color: var(--muted);
+}
+.picked-card .picked-avatar {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.picked-card .picked-text {
+  min-width: 0;
+}
+.picked-card .picked-name {
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.picked-card .picked-meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+.family-card .family-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  line-height: 1;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--muted);
+  cursor: pointer;
+}
+.family-card .family-remove:hover {
+  border-color: #dc2626;
+  background: rgba(220, 38, 38, 0.12);
+  color: #dc2626;
+}
+.family-card:not(.head) .family-top {
+  padding-right: 22px;
+}
+.family-card .family-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.family-card .family-btn {
+  padding: 3px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+.family-card .family-stat.ok {
+  color: var(--ok);
+  background: rgba(4, 120, 87, 0.12);
+  font-weight: 600;
+}
+/* Inline period expander: a full-width sub-row under a ledger period. */
+.ledger-expand-row > td.ledger-expand-cell {
+  padding: 0;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+}
+.ledger-events-table {
+  width: 100%;
+  table-layout: fixed;
+}
+.ledger-events-table th,
+.ledger-events-table td {
+  padding: 4px 8px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ledger-events-table th.num,
+.ledger-events-table td.num,
+.ledger-events-table td:nth-child(n + 4) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.ledger-events-table th:nth-child(1) {
+  width: 196px;
+}
+.ledger-events-table th:nth-child(2),
+.ledger-events-table td:nth-child(2) {
+  width: 72px;
+}
+.ledger-events-table th:nth-child(4),
+.ledger-events-table td:nth-child(4) {
+  width: 92px;
+}
+.ledger-events-table th:nth-child(5),
+.ledger-events-table td:nth-child(5) {
+  width: 96px;
+}
+.ledger-events-table th:nth-child(6),
+.ledger-events-table td:nth-child(6) {
+  width: 100px;
+}
+.ledger-events-table th:nth-child(7),
+.ledger-events-table td:nth-child(7),
+.ledger-events-table th:nth-child(8),
+.ledger-events-table td:nth-child(8) {
+  width: 170px;
+}
+.ledger-events-table th:nth-child(3),
+.ledger-events-table td:nth-child(3) {
+  width: auto;
+  min-width: 110px;
+}
+.ledger-events-table td.ledger-bal {
+  white-space: nowrap;
+}
+.ledger-events-table td.ledger-bal .bal-cash {
+  font-weight: 600;
+  color: var(--ink);
+}
+.ledger-events-table td.ledger-bal .bal-sep {
+  color: var(--muted);
+}
+.ledger-events-table td.ledger-bal .bal-due.warn {
+  color: var(--warn);
+  font-weight: 600;
+}
+.ledger-events-table td.pos {
+  color: var(--ok);
+}
+.ledger-events-table td.neg {
+  color: var(--danger);
+}
+.ledger-events-table td.warn {
+  color: var(--warn);
+}
+.ledger-events-table td.merch {
+  color: var(--danger);
+}
+
+/* ---------- auth gate ---------- */
+body.auth-locked {
+  overflow: hidden;
+}
+#auth-root {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+}
+.auth-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: var(--bg);
+}
+.auth-card {
+  width: min(92vw, 380px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: var(--shadow-bar);
+}
+.auth-title {
+  margin: 0;
+  font-size: 20px;
+}
+.auth-sub {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+.auth-label {
+  color: var(--muted);
+}
+.auth-field input,
+.auth-field select {
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font: inherit;
+  background: var(--bg);
+  color: var(--ink);
+}
+.auth-submit {
+  margin-top: 4px;
+}
+.auth-error {
+  margin: 0;
+  color: var(--danger, #c0392b);
+  font-size: 13px;
+}

@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lab Test Book</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#2563eb" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="topbar">
+    <nav class="tabs" aria-label="Primary">
+      <button type="button" class="nav-tab" data-route="bill" aria-current="page">
+        New Bill<kbd class="kbd">Ctrl+1</kbd>
+      </button>
+      <button type="button" class="nav-tab" data-route="bills">
+        Bills<kbd class="kbd">Ctrl+2</kbd>
+      </button>
+      <button type="button" class="nav-tab" data-route="patients">
+        Patients<kbd class="kbd">Ctrl+3</kbd>
+      </button>
+      <button type="button" class="nav-tab" data-route="ledger">
+        Ledger<kbd class="kbd">Ctrl+4</kbd>
+      </button>
+      <button type="button" class="nav-tab" data-route="tests">
+        Tests<kbd class="kbd">Ctrl+5</kbd>
+      </button>
+      <button type="button" class="nav-tab" data-route="labs">
+        Labs<kbd class="kbd">Ctrl+6</kbd>
+      </button>
+      <button type="button" class="nav-tab" data-route="doctors">
+        Doctors<kbd class="kbd">Ctrl+7</kbd>
+      </button>
+      <button type="button" class="nav-tab" data-route="users" id="nav-users" hidden>
+        Users<kbd class="kbd">Ctrl+8</kbd>
+      </button>
+    </nav>
+    <div class="topbar-right">
+      <span id="whoami" class="whoami"></span>
+      <button type="button" id="btn-settings" class="ghost-btn icon-btn" title="Settings" aria-label="Settings">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z">
+          </path>
+        </svg>
+      </button>
+      <button type="button" id="btn-logout" class="ghost-btn">Logout</button>
+    </div>
+  </header>
+
+  <div id="drift-banner" class="drift-banner" role="alert" hidden>
+    <span id="drift-banner-text"></span>
+    <button type="button" id="drift-banner-rebuild" class="ghost-btn">Rebuild now</button>
+    <button type="button" id="drift-banner-dismiss" class="ghost-btn">Dismiss</button>
+  </div>
+
+  <main id="main">
+    <section class="page" id="page-tests" hidden role="region" aria-label="Tests">
+      <div class="toolbar">
+        <input id="test-search" type="search" placeholder="Search tests…" aria-label="Search tests"
+          class="toolbar-search" data-list-search />
+        <button id="test-add-btn" type="button" class="primary">+ Add Test</button>
+        <span id="tests-count" class="hint"></span>
+      </div>
+      <table id="test-table" aria-label="Tests" data-list-nav data-row-class="test-row" data-search="test-search"
+        data-enter="test-enter" data-delete="test-delete" data-history="test-history">
+        <colgroup>
+          <col />
+          <col style="width: 120px" />
+          <col style="width: 150px" />
+          <col style="width: 70px" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Merchant Price</th>
+            <th>Ver</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p id="tests-empty" class="empty">No tests yet — click "+ Add Test" to create one.</p>
+    </section>
+
+    <section class="page" id="page-labs" hidden role="region" aria-label="Labs">
+      <div class="toolbar">
+        <input id="lab-search" type="search" placeholder="Search labs…" aria-label="Search labs" class="toolbar-search"
+          data-list-search />
+        <button id="lab-add-btn" type="button" class="primary">+ Add Lab</button>
+        <span id="labs-count" class="hint"></span>
+      </div>
+      <table id="lab-table" aria-label="Labs" data-list-nav data-row-class="lab-row" data-search="lab-search"
+        data-enter="page-labs-enter" data-delete="page-labs-delete" data-history="page-labs-history">
+        <colgroup>
+          <col />
+          <col style="width: 70px" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th class="col-ver">Ver</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p id="labs-empty" class="empty">No labs yet — click "+ Add Lab" to create one.</p>
+    </section>
+
+    <section class="page" id="page-doctors" hidden role="region" aria-label="Doctors">
+      <div class="toolbar">
+        <input id="doctor-search" type="search" placeholder="Search doctors…" aria-label="Search doctors"
+          class="toolbar-search" data-list-search />
+        <button id="doctor-add-btn" type="button" class="primary">+ Add Doctor</button>
+        <span id="doctors-count" class="hint"></span>
+      </div>
+      <table id="doctor-table" aria-label="Doctors" data-list-nav data-row-class="doctor-row"
+        data-search="doctor-search" data-enter="page-doctors-enter" data-delete="page-doctors-delete"
+        data-history="page-doctors-history">
+        <colgroup>
+          <col />
+          <col style="width: 70px" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th class="col-ver">Ver</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p id="doctors-empty" class="empty">No doctors yet — click "+ Add Doctor" to create one.</p>
+    </section>
+
+    <section class="page" id="page-bill" hidden role="region" aria-label="New bill">
+      <div class="split">
+        <div class="split-left">
+          <form id="bill-form" autocomplete="off">
+            <input type="hidden" id="bill-edit-id" />
+            <input type="hidden" id="bill-datetime" />
+            <input type="hidden" id="bill-person-id" name="patient-id" />
+            <label class="span-2">Affiliated By (Lab)
+              <select id="bill-lab" name="affiliated-by"></select>
+            </label>
+            <label class="span-2">Referred By
+              <select id="bill-doc" name="referred-by"></select>
+            </label>
+            <label class="span-2">Bill No
+              <input id="bill-no" name="bill-no" type="number" min="1" step="1" placeholder="Auto" required />
+            </label>
+            <label class="autofill-field span-3"><span class="lbl">Name <span class="req"
+                  aria-hidden="true">*</span></span>
+              <input id="bill-cust-name" name="customer-name" type="text" maxlength="80" autocomplete="off" required />
+              <ul id="cust-name-suggest" class="suggest-list" hidden></ul>
+            </label>
+            <label class="autofill-field span-3"><span class="lbl">Mobile <span class="req"
+                  aria-hidden="true">*</span></span>
+              <input id="bill-cust-mob" name="customer-mob" type="tel" inputmode="numeric" pattern="[0-9+\- ]{6,15}"
+                maxlength="15" autocomplete="off" required />
+            </label>
+            <p id="bill-advance-note" class="span-6 hint" hidden></p>
+            <label class="span-2">Gender
+              <select id="bill-cust-gender" name="customer-gender">
+                <option value="M" selected>Male</option>
+                <option value="F">Female</option>
+                <option value="O">Other</option>
+              </select>
+            </label>
+            <label class="span-2">Age
+              <input id="bill-cust-age" name="customer-age" type="number" min="0" max="150" />
+            </label>
+            <label class="span-2">Weight (kg)
+              <input id="bill-cust-weight" name="customer-weight" type="number" min="0" max="400" step="0.1" />
+            </label>
+
+            <div class="span-6">
+              <label class="autofill-field">
+                Add Test
+                <input id="bill-test-input" type="text" placeholder="Type a test name…" autocomplete="off" />
+                <ul id="bill-test-suggest" class="suggest-list" hidden></ul>
+              </label>
+            </div>
+
+            <div class="span-6">
+              <table id="bill-test-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th class="num">Price</th>
+                  </tr>
+                </thead>
+                <tbody id="bill-tests-body"></tbody>
+                <tbody class="bill-totals-body">
+                  <tr class="tot-row">
+                    <td class="tot-label">Total</td>
+                    <td class="tot-num" id="tot-subtotal">0.00</td>
+                  </tr>
+                  <tr class="tot-row">
+                    <td class="tot-label">Discount</td>
+                    <td class="tot-num">
+                      <span class="tot-inputs">
+                        <input id="bill-discount-per" name="discount-per" type="number" min="0" max="100" step="1"
+                          placeholder="%" aria-label="Discount percent" />
+                        <span class="tot-cur">₹</span>
+                        <input id="bill-discount-no" name="discount-no" type="number" min="0" step="5" placeholder="0"
+                          aria-label="Discount amount" />
+                        <button id="bill-discount-ctc" type="button" class="ctc-btn" hidden
+                          title="Admin: set discount to the maximum — the customer pays the cost-to-cost (CTC) floor, zero margin">CTC</button>
+                      </span>
+                      <span id="tot-discount">0</span>
+                    </td>
+                  </tr>
+                  <tr class="tot-row tot-grand">
+                    <td class="tot-label">Grand Total</td>
+                    <td class="tot-num" id="tot-grand">0.00</td>
+                  </tr>
+                  <tr class="tot-row">
+                    <td class="tot-label">Payment</td>
+                    <td class="tot-num">
+                      <span class="tot-inputs">
+                        <select id="bill-paid" name="paid" aria-label="Payment">
+                          <option value="1" selected>Cash</option>
+                          <option value="2">UPI</option>
+                          <option value="0">Pay later</option>
+                        </select>
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="form-row">
+              <button id="save-bill-btn" type="submit" class="primary">
+                Save Bill<kbd class="kbd">Ctrl+S</kbd>
+              </button>
+              <button id="print-bill-btn" type="button">
+                Print<kbd class="kbd">Ctrl+P</kbd>
+              </button>
+              <button id="new-bill-btn" type="button" style="display: none">
+                New Bill<kbd class="kbd">Ctrl+N</kbd>
+              </button>
+            </div>
+          </form>
+          <div class="register-hints">
+            <span class="kbd-hint" id="hint-save">Save<kbd class="kbd">Ctrl+S</kbd></span>
+            <span class="kbd-hint" id="hint-print">Print<kbd class="kbd">Ctrl+P</kbd></span>
+            <span class="kbd-hint" id="hint-new">New<kbd class="kbd">Ctrl+N</kbd></span>
+            <span class="kbd-hint" id="hint-ledger" title="Open this customer's ledger (Alt+L)">Ledger<kbd
+                class="kbd">Alt+L</kbd></span>
+          </div>
+        </div>
+        <div class="split-right">
+          <div id="bill-ps-host" class="ps-host"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-bills" hidden role="region" aria-label="Bills">
+      <div class="ledger-toolbar">
+        <span id="bills-page-info" class="hint"></span>
+        <div class="pager ledger-pager-center">
+          <button id="bills-prev-day" type="button">← Earlier</button>
+          <input id="bills-day-label" type="date" aria-label="Jump to day" title="Pick a day to jump to">
+          <button id="bills-next-day" type="button">Later →</button>
+        </div>
+        <div style="justify-self: end; display: flex; gap: 8px">
+          <button id="bills-requests" type="button" hidden>Delete requests</button>
+          <button id="bills-today" type="button">Today</button>
+        </div>
+      </div>
+      <table id="bills-table" aria-label="Bills" data-list-nav data-row-class="bills-row" data-enter="bills-enter"
+        data-delete="bills-delete" data-history="bills-history">
+        <colgroup>
+          <col style="width: 90px" />
+          <col style="width: 120px" />
+          <col style="width: 100px" />
+          <col />
+          <col style="width: 110px" />
+          <col style="width: 200px" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>Bill No</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Name</th>
+            <th>Total</th>
+            <th>Payment</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p id="bills-empty" class="empty">No bills found.</p>
+      <div class="pager" id="bills-pager">
+        <span id="bills-page-hint" class="hint"></span>
+      </div>
+    </section>
+
+    <section class="page" id="page-patients" hidden role="region" aria-label="Patients">
+      <div class="toolbar">
+        <input id="patients-search" type="search" placeholder="Search name or mobile…" aria-label="Search patients"
+          class="toolbar-search" data-list-search />
+        <button id="patients-due-toggle" type="button" class="seg-btn" aria-pressed="false">Pending only</button>
+        <span id="patients-count" class="hint"></span>
+      </div>
+      <table id="patients-table" aria-label="Patients" data-list-nav data-row-class="row-click"
+        data-search="patients-search" data-enter="patients-enter" data-history="patients-history"
+        data-pager-next="pg-next" data-pager-prev="pg-prev">
+        <colgroup>
+          <col style="width: 52px" />
+          <col />
+          <col style="width: 120px" />
+          <col style="width: 64px" />
+          <col style="width: 78px" />
+          <col style="width: 60px" />
+          <col style="width: 70px" />
+          <col style="width: 110px" />
+          <col style="width: 150px" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Mobile</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Wt</th>
+            <th>Bills</th>
+            <th class="sortable" data-sort="pending">Pending</th>
+            <th class="sortable" data-sort="lastBillAt">Last bill</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p id="patients-empty" class="empty">No patients.</p>
+      <div class="pager" id="patients-pager" hidden>
+        <button id="pg-prev" type="button">Prev</button>
+        <span id="pg-info" class="hint"></span>
+        <button id="pg-next" type="button">Next</button>
+      </div>
+    </section>
+
+    <section class="page" id="page-ledger" hidden role="region" aria-label="Ledger">
+      <div id="ledger-scope" class="ledger-scope">
+        <span id="ledger-scope-name" class="scope-chip"></span>
+        <button id="ledger-scope-clear" type="button" class="ghost-btn" hidden>✕ Whole lab</button>
+        <span id="ledger-scope-actions" class="scope-actions" hidden>
+          <button id="ledger-pay-btn" type="button" class="scope-act act-ok" data-act="pay" hidden>Pay due</button>
+          <button id="ledger-advance-btn" type="button" class="scope-act act-accent" data-act="advance" hidden>Add
+            advance</button>
+          <button id="ledger-refund-btn" type="button" class="scope-act act-warn" data-act="refund" hidden>Refund
+            advance</button>
+          <button id="ledger-add-btn" type="button" class="scope-act act-plain" data-act="add" hidden>Add
+            member</button>
+        </span>
+        <button id="ledger-summary-btn" type="button" class="ghost-btn scope-summary-btn"
+          title="Show/hide the all-time totals">Show all-time</button>
+      </div>
+      <div id="ledger-family" class="family-cards" hidden></div>
+      <div id="ledger-summary" class="admin-sum"></div>
+      <div class="ledger-toolbar">
+        <div class="seg" id="ledger-mode" role="tablist" aria-label="Ledger period">
+          <button type="button" class="seg-btn active" data-mode="day">Day</button>
+          <button type="button" class="seg-btn" data-mode="week">Week</button>
+          <button type="button" class="seg-btn" data-mode="month">Month</button>
+          <button type="button" class="seg-btn" data-mode="year">Year</button>
+        </div>
+        <div class="pager ledger-pager-center">
+          <button id="ledger-prev-btn" type="button">← Earlier</button>
+          <input id="ledger-page-hint" type="date" aria-label="Jump to period" title="Pick a period to jump to">
+          <button id="ledger-next-btn" type="button">Later →</button>
+        </div>
+        <div class="seg" id="ledger-book" role="tablist" aria-label="Ledger book">
+          <button type="button" class="seg-btn active" data-book="all">All</button>
+          <button type="button" class="seg-btn" data-book="cash">Received</button>
+          <button type="button" class="seg-btn" data-book="due">Credit</button>
+        </div>
+      </div>
+      <div id="ledger-period" class="admin-sum"></div>
+      <table id="ledger-gl" class="gl" aria-label="Ledger"></table>
+      <p id="ledger-empty" class="empty">No ledger events yet.</p>
+    </section>
+
+    <section class="page" id="page-users" hidden role="region" aria-label="Users">
+      <div class="toolbar">
+        <button type="button" id="users-new" class="primary">New user</button>
+        <span class="hint">Admin-only. Users can only open New Bill and Bills.</span>
+      </div>
+      <table id="users-table" aria-label="Users" data-list-nav data-row-class="row-click" data-history="users-history">
+        <colgroup>
+          <col />
+          <col style="width: 100px" />
+          <col style="width: 100px" />
+          <col style="width: 180px" />
+          <col style="width: 180px" />
+          <col style="width: 300px" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Last login</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p id="users-empty" class="empty">No users.</p>
+    </section>
+  </main>
+
+  <footer id="statusbar" role="contentinfo">
+    <div class="statusbar-left">
+      <span id="backup-status" class="status">backup: idle</span>
+      <span id="work-status" class="status work" role="status" aria-live="polite" hidden></span>
+      <button id="update-status" class="status" type="button" hidden>update available</button>
+    </div>
+    <div class="statusbar-right">
+      <input id="file-restore" type="file" accept=".csv,text/csv" hidden />
+      <button id="btn-backup" type="button" title="Backup bills to a folder">Backup</button>
+      <button id="btn-restore" type="button" title="Restore bills from folder or file">
+        Restore
+      </button>
+      <button id="btn-log" type="button" title="Show the append-only backup log">Log</button>
+      <button id="btn-test" type="button" title="Self-test">Test</button>
+      <span id="dev-cluster" hidden>
+        <button id="btn-clear" type="button" title="Delete all tests + bills">Clear</button>
+        <button id="btn-seed" type="button" title="Insert sample tests + bills">Seed</button>
+      </span>
+    </div>
+  </footer>
+
+  <div id="auth-root" hidden></div>
+
+  <div id="toast-host" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="pw.js"></script>
+  <script type="module" src="src/ui/app.js"></script>
+</body>
+
+</html>
