@@ -508,7 +508,7 @@ tbody tr.active:hover {
   transform: scale(var(--preview-scale, 1));
   transform-origin: top center;
   /* keep layout height proportional to the scaled block */
-  margin-bottom: calc((var(--preview-scale, 1) - 1) * 148.5mm);
+  margin-bottom: calc((var(--preview-scale, 1) - 1) * 148mm);
 }
 .ps-host .print-receipt {
   background: #fff;
@@ -1578,7 +1578,7 @@ table.is-loading {
 .print-receipt {
   display: flex;
   width: 210mm;
-  height: 148.5mm;
+  height: 148mm;
   box-sizing: border-box;
   font-family: 'Inter', system-ui, sans-serif;
   font-variant-numeric: tabular-nums;
@@ -2121,16 +2121,24 @@ table.is-loading {
 }
 
 /* Print: hide the app, show only the print root.
-   Paper size is NOT forced here (size: auto) so the print dialog's paper
-   dropdown drives it. The receipt is a fixed 210mm x 148.5mm block:
+   Paper size is forced to A5 landscape (210mm x 148mm), matching the receipt block.
+   Previously size: auto, which let the dialog drive it:
      - A5 loaded  -> fills the sheet
      - A4 loaded  -> sits in the top half (cut in half after printing)
      - Letter     -> sits top-left, small side margins
    Operator note: set Margins = None in the print dialog for a flush receipt. */
 @media print {
   @page {
-    size: auto;
+    size: A5 landscape;
     margin: 0;
+  }
+  @page pr-a4 {
+    size: A4;
+    margin: 0;
+  }
+  .print-receipt.pr-tall {
+    page: pr-a4;
+    height: 297mm;
   }
 
   body > *:not(#print-root) {

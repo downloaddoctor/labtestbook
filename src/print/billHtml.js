@@ -89,7 +89,10 @@ export function renderBillHtml(bill) {
   const company = bill.companyName || COMPANY;
   const address = bill.companyAddress || '';
 
-  return `<div class="print-receipt">
+  // Many tests overflow the A5 half sheet: switch to a full A4 page (16 tests max on A5, 14 when Sub Total + Discount rows show).
+  const tall = items.length > (hasDisc ? 14 : 16);
+
+  return `<div class="print-receipt${tall ? ' pr-tall' : ''}">
   <section class="pr-copy pr-merchant">
     <h1 class="pr-company">${esc(company)}</h1>
     <p class="pr-diagnosed">Referred By: ${esc(bill.docName || '')}</p>
