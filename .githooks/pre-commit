@@ -7,8 +7,8 @@
 set -e
 
 # 0. Parse-check every JS module (catches syntax errors the browser would hit).
-if [ -f scripts/check.sh ]; then
-  sh scripts/check.sh
+if [ -f scripts/check-modules.sh ]; then
+  sh scripts/check-modules.sh
 fi
 
 # Files the SW precaches (kept in sync with the generator + sw.js).
@@ -16,7 +16,7 @@ CACHED='^(index\.html|styles\.css|favicon\.svg|manifest\.webmanifest|pw\.js|src/
 
 STAGED=$(git diff --cached --name-only)
 
-if echo "$STAGED" | grep -Eq "$CACHED"; then
+if [ -n "$STAGED" ]; then
   # 1. Regenerate sw.js SHELL_ASSETS from the tree; stage it if it changed.
   sh scripts/gen-shell-assets.sh
   git add sw.js
