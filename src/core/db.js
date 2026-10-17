@@ -495,6 +495,20 @@ class DB {
     PREFS.set('companyName', name ? String(name).trim() : '');
     return Promise.resolve();
   }
+  getCompanyAddress() {
+    return Promise.resolve(PREFS.get('companyAddress') || '');
+  }
+  setCompanyAddress(v) {
+    PREFS.set('companyAddress', v ? String(v).trim() : '');
+    return Promise.resolve();
+  }
+  getCompanyPhone() {
+    return Promise.resolve(PREFS.get('companyPhone') || '');
+  }
+  setCompanyPhone(v) {
+    PREFS.set('companyPhone', v ? String(v).trim() : '');
+    return Promise.resolve();
+  }
 
   // ---- user revisions (auth) ----
   async appendUserRevision(user, { log = true } = {}) {

@@ -1277,12 +1277,24 @@ table.is-loading {
   color: var(--muted);
 }
 
-/* Totals live INSIDE #bill-test-table as a second tbody, so the bill reads as
-   one continuous table (same columns, same borders). */
+/* Test table: Name auto, Price fixed width. table-layout: fixed makes the
+   Price column a stable 120px regardless of how long a test name is. */
+#bill-test-table {
+  table-layout: fixed;
+  width: 100%;
+}
+#bill-test-table th:first-child,
+#bill-test-table td:first-child {
+  width: auto;
+  text-align: left;
+}
 #bill-test-table th.num,
 #bill-test-table td.num {
+  width: 102px;
   text-align: right;
 }
+/* Totals live INSIDE #bill-test-table as a second tbody, so the bill reads as
+   one continuous table (same columns, same borders). */
 #bill-test-table .bill-totals-body td {
   background: #fafbfc;
   border-top: 1px solid var(--line);
@@ -1336,10 +1348,26 @@ table.is-loading {
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
+
+/* Discount row: label + inputs in the FIRST cell (flex, space-between);
+   the discount value alone in the second cell, same column as the other
+   totals values. */
+#bill-test-table .tot-row-discount .tot-label-inputs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  text-align: left;
+}
+#bill-test-table .tot-row-discount .tot-text {
+  color: var(--muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
 #bill-test-table .tot-inputs {
   display: inline-flex;
+  align-items: center;
   gap: 6px;
-  margin-right: 10px;
   vertical-align: middle;
 }
 #bill-test-table .tot-inputs input,
@@ -1353,7 +1381,7 @@ table.is-loading {
   font-variant-numeric: tabular-nums;
 }
 #bill-test-table .tot-inputs select {
-  width: auto;
+  width: 78px;
 }
 #bill-test-table .tot-inputs .tot-pct,
 #bill-test-table .tot-inputs .tot-cur {
@@ -1638,18 +1666,39 @@ table.is-loading {
   padding: 0.6mm 0;
 }
 
-.print-receipt table,
-.print-receipt th,
-.print-receipt td {
-  border: 0;
-  background: transparent;
+/* Base reset — scoped so the customer copy's bordered tables (.c-meta,
+   .c-totals) aren't flattened. Only .pr-table cells reset to borderless. */
+.print-receipt table {
   border-radius: 0;
   overflow: visible;
+}
+.print-receipt .pr-table {
+  border-collapse: collapse;
 }
 .print-receipt .pr-table td {
   padding: 0.7mm 0;
   vertical-align: top;
   border-bottom: 0;
+}
+
+/* Merchant copy: same box + header-fill style as the customer copy. */
+.print-receipt .pr-merchant .pr-table {
+  border: 0.15mm solid #000;
+  table-layout: fixed;
+  width: 100%;
+}
+.print-receipt .pr-merchant .pr-table th,
+.print-receipt .pr-merchant .pr-table td {
+  border: 0.15mm solid #000;
+  padding: 0.7mm 1.2mm;
+}
+.print-receipt .pr-merchant .pr-table thead th {
+  background: #e8e8e8;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 8pt;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
 }
 
 .print-receipt .pr-table tr.tot-first td {
@@ -1681,6 +1730,142 @@ table.is-loading {
   font-weight: 600;
   letter-spacing: 0.5pt;
 }
+
+/* ---- Customer copy: reference cash-receipt styling (Reliable Diagnostic
+   Center layout). Only the .pr-customer zone changes; the merchant copy above
+   keeps its existing look. Everything is sized to fit inside the 62% column.
+   Cells are fully boxed (all four borders), like the printed reference form. */
+.pr-customer .c-head {
+  text-align: center;
+  margin: 0 0 1mm;
+}
+.pr-customer .c-company {
+  margin: 0;
+  font-size: 12pt;
+  font-weight: 700;
+  letter-spacing: 0.3pt;
+  text-transform: uppercase;
+}
+.pr-customer .c-contact {
+  margin: 0.3mm 0 0;
+  font-size: 6.5pt;
+  color: #222;
+}
+/* Meta block: 4 cells per row (label | value | label | value), 3 rows.
+   Only HORIZONTAL row rules — no vertical borders — matching the reference.
+   Line weights match the test table's cell borders (all 0.15mm). */
+.print-receipt .pr-customer .c-meta {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 1.5mm;
+  font-size: 7.5pt;
+  table-layout: fixed;
+  background: transparent;
+}
+.print-receipt .pr-customer .c-meta td {
+  border: 0;
+  border-bottom: 0.15mm solid var(--line);
+  padding: 0.6mm 1.2mm;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: transparent;
+}
+/* Label cell: name left, ':' right (space-between). */
+.print-receipt .pr-customer .c-meta td.c-lab {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1mm;
+  width: 18%;
+  padding-right: 0.4mm;
+}
+.print-receipt .pr-customer .c-meta td.c-lab .c-k,
+.print-receipt .pr-customer .c-meta td.c-lab .c-sep {
+  color: #333;
+}
+.print-receipt .pr-customer .c-meta td.c-v {
+  width: 32%;
+  font-weight: 600;
+  padding-left: 0.8mm;
+}
+
+/* Test table: full box borders. Higher specificity than .print-receipt
+   .pr-table so the base reset can't flatten cells. */
+/* Fixed layout so column widths are stable — Charges stays a fixed width
+   regardless of how long a test name is. */
+/* Full grid (outer box + vertical rules), same as the merchant copy. */
+.print-receipt .pr-customer .pr-table {
+  margin-top: 0;
+  border: 0.15mm solid #000;
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+}
+.print-receipt .pr-customer .pr-table th,
+.print-receipt .pr-customer .pr-table td {
+  border: 0.15mm solid #000;
+  padding: 0.7mm 1.2mm;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}
+.print-receipt .pr-customer .pr-table .c-sr,
+.print-receipt .pr-customer .pr-table .c-price {
+  white-space: nowrap;
+}
+.print-receipt .pr-customer .pr-table thead th {
+  border-top: 0.15mm solid #000;
+  border-bottom: 0.15mm solid #000;
+  background: transparent;
+}
+.print-receipt .pr-customer .pr-table .c-sr {
+  width: 10mm;
+  text-align: center;
+}
+.print-receipt .pr-customer .pr-table .c-name {
+  width: auto;
+  text-align: left;
+}
+.print-receipt .pr-customer .pr-table .c-price {
+  width: 24mm;
+  text-align: right;
+}
+
+/* Totals: column widths MATCH the test table above so the amount column
+   lines up exactly with the Charges (Rs.) column. Test table cols:
+   Sr.No 10mm | Test Name auto | Charges 24mm. Totals table: [label spans
+   10mm + auto] | amount 24mm. No borders — plain rows. */
+.print-receipt .pr-customer .c-totals {
+  margin: 0;
+  border-collapse: collapse;
+  border: 0;
+  width: 100%;
+  table-layout: fixed;
+  font-size: 7.5pt;
+  background: transparent;
+}
+.print-receipt .pr-customer .c-totals td {
+  border: 0;
+  padding: 0.6mm 1.2mm;
+  background: transparent;
+}
+.print-receipt .pr-customer .c-totals td.c-k {
+  text-align: right;
+  color: #333;
+}
+.print-receipt .pr-customer .c-totals td.c-v {
+  width: 24mm;
+  text-align: right;
+  font-weight: 600;
+}
+.print-receipt .pr-customer .c-totals tr.c-tot-grand td {
+  font-size: 8.5pt;
+  font-weight: 700;
+}
+
+/* (Signature block removed from the customer copy.) */
 
 /* History toolbar: date controls + segmented mode picker. */
 #page-bills .toolbar .summary-btn-right {

@@ -147,7 +147,9 @@
         <div class="split-left">
           <form id="bill-form" autocomplete="off">
             <input type="hidden" id="bill-edit-id" />
-            <input type="hidden" id="bill-datetime" />
+            <label class="span-2">Date &amp; Time
+              <input id="bill-datetime" type="datetime-local" />
+            </label>
             <input type="hidden" id="bill-person-id" name="patient-id" />
             <label class="span-2">Affiliated By (Lab)
               <select id="bill-lab" name="affiliated-by"></select>
@@ -205,9 +207,9 @@
                     <td class="tot-label">Total</td>
                     <td class="tot-num" id="tot-subtotal">0.00</td>
                   </tr>
-                  <tr class="tot-row">
-                    <td class="tot-label">Discount</td>
-                    <td class="tot-num">
+                  <tr class="tot-row tot-row-discount">
+                    <td class="tot-label-inputs">
+                      <span class="tot-text">Discount</span>
                       <span class="tot-inputs">
                         <input id="bill-discount-per" name="discount-per" type="number" min="0" max="100" step="1"
                           placeholder="%" aria-label="Discount percent" />
@@ -217,8 +219,8 @@
                         <button id="bill-discount-ctc" type="button" class="ctc-btn" hidden
                           title="Admin: set discount to the maximum — the customer pays the cost-to-cost (CTC) floor, zero margin">CTC</button>
                       </span>
-                      <span id="tot-discount">0</span>
                     </td>
+                    <td class="tot-num" id="tot-discount">0</td>
                   </tr>
                   <tr class="tot-row tot-grand">
                     <td class="tot-label">Grand Total</td>

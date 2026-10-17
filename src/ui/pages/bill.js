@@ -23,6 +23,8 @@ import { debounce } from '../../core/util.js';
 let currentTests = [];
 let editingId = null;
 let _company = '';
+let _companyAddress = '';
+let _companyPhone = '';
 let _loadedOriginal = null;      // hydrated bill when editing
 let _loadedPins = [];            // original pins [{itemId,itemV,hid}]
 let _formInitialized = false;
@@ -314,7 +316,7 @@ function renderPreview() {
   const host = el('bill-ps-host');
   if (!host) return;
   const meta = collectMeta();
-  const datetime = editingId ? _originalDatetime() : nowLocalInput();
+  const datetime = (el('bill-datetime') && el('bill-datetime').value) || (editingId ? _originalDatetime() : nowLocalInput());
   const bill = {
     id: meta.id,
     datetime,
@@ -324,10 +326,13 @@ function renderPreview() {
     labName: selText('bill-lab'),
     docName: selText('bill-doc'),
     companyName: _company,
+    companyAddress: _companyAddress,
+    companyPhone: _companyPhone,
     person: {
       name: el('bill-cust-name') ? el('bill-cust-name').value.trim().toUpperCase() : '',
       mob: el('bill-cust-mob') ? el('bill-cust-mob').value.trim() : '',
       age: el('bill-cust-age') ? el('bill-cust-age').value.trim() : '',
+      gender: el('bill-cust-gender') ? el('bill-cust-gender').value : '',
     },
     payment: Number(el('bill-paid') ? el('bill-paid').value : 1),
     cust_total: sumField(activeItems(), 'sell'),
@@ -454,6 +459,7 @@ function collectMeta() {
     disc_amt: el('bill-discount-no') ? el('bill-discount-no').value.trim() : '',
     discount_per: el('bill-discount-per') ? el('bill-discount-per').value.trim() : '',
     payment: el('bill-paid') ? Number(el('bill-paid').value) : 1,
+    datetime: el('bill-datetime') ? el('bill-datetime').value : '',
   };
 }
 
@@ -698,7 +704,7 @@ async function resetForm() {
   if (el('bill-discount-no')) el('bill-discount-no').value = '';
   _discAmtManual = false;
   if (el('bill-paid')) el('bill-paid').value = '1';
-  if (el('bill-datetime')) el('bill-datetime').value = '';
+  if (el('bill-datetime')) el('bill-datetime').value = nowLocalInput();
   showAdvanceNote(null);
   _loadedOriginal = null;
   formMsgClear();
@@ -802,7 +808,7 @@ async function doSave() {
 
   if (editingId) {
     // Preserve the loaded/entered datetime; revAt is stamped by _appendBillRev.
-    const datetime = el('bill-datetime').value || nowLocalInput();
+    const datetime = (el('bill-datetime') && el('bill-datetime').value) || _originalDatetime() || nowLocalInput();
     try {
       const updated = await db.updateBill({
         id: editingId,
@@ -853,7 +859,7 @@ async function doSave() {
         age: meta.age,
         gender: meta.gender,
         weight: meta.weight,
-        datetime: nowLocalInput(),
+        datetime: meta.datetime || nowLocalInput(),
         items: pins,
         discount_per: discPer,
         disc_amt: discAmt,
@@ -930,7 +936,7 @@ async function doPrint() {
     return;
   }
   const meta = collectMeta();
-  const datetime = editingId ? _originalDatetime() : nowLocalInput();
+  const datetime = (el('bill-datetime') && el('bill-datetime').value) || (editingId ? _originalDatetime() : nowLocalInput());
   const sub = sumField(activeItems(), 'sell');
   const da = Math.min(numOrZero(el('bill-discount-no') ? el('bill-discount-no').value : ''), sub);
   const bill = {
@@ -940,7 +946,9 @@ async function doPrint() {
     labName: selText('bill-lab'),
     docName: selText('bill-doc'),
     companyName: _company,
-    person: { name: meta.name.toUpperCase(), mob: meta.mob, age: meta.age },
+    companyAddress: _companyAddress,
+    companyPhone: _companyPhone,
+    person: { name: meta.name.toUpperCase(), mob: meta.mob, age: meta.age, gender: meta.gender },
     payment: meta.payment,
     cust_total: sub,
     merch_total: sumField(activeItems(), 'buy'),
@@ -1113,6 +1121,8 @@ function wire() {
 export async function mount() {
   off = bindOff();
   _company = await db.getCompanyName();
+  _companyAddress = await db.getCompanyAddress();
+  _companyPhone = await db.getCompanyPhone();
   syncCtcVisibility();
   wire();
   if (editingId) renderBillTests();
