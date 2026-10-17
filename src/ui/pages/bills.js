@@ -152,7 +152,6 @@ async function openRow(id) {
   const withRefs = await db.hydrateBillRefs(hydrated);
   withRefs.companyName = await db.getCompanyName();
   withRefs.companyAddress = await db.getCompanyAddress();
-  withRefs.companyPhone = await db.getCompanyPhone();
   _openBill = withRefs;
   await openModal('billView', {
     bill: withRefs,

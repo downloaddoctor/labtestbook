@@ -29,6 +29,14 @@ function esc(s) {
     .replace(/"/g, '&quot;');
 }
 
+// Escapes everything, then restores only attribute-free b/i/em/strong/u tags and line breaks.
+function richText(s) {
+  return esc(s)
+    .replace(/&lt;(\/?)(b|i|em|strong|u)&gt;/gi, '<$1$2>')
+    .replace(/&lt;br\s*\/?&gt;/gi, '<br>')
+    .replace(/\r?\n/g, '<br>');
+}
+
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 // '2026-10-11T15:45' -> '11 Oct 2026, 03:45 PM' (day and hour zero-padded). Parsed by hand (no Date) so the
@@ -80,7 +88,6 @@ export function renderBillHtml(bill) {
   const tick = isPaid ? '<span class="pr-tick">✓</span>' : '';
   const company = bill.companyName || COMPANY;
   const address = bill.companyAddress || '';
-  const phone = bill.companyPhone || '';
 
   return `<div class="print-receipt">
   <section class="pr-copy pr-merchant">
@@ -100,13 +107,13 @@ export function renderBillHtml(bill) {
     <table class="pr-table pr-table-merchant">
       <thead><tr><th class="c-name">Test</th></tr></thead>
       <tbody>${mRows}</tbody>
+      <tfoot><tr><td class="c-name m-total">Total Tests: ${items.length}</td></tr></tfoot>
     </table>
   </section>
   <section class="pr-copy pr-customer">
     <header class="c-head">
       <h1 class="c-company">${esc(company)}</h1>
-      ${address ? `<p class="c-contact">${esc(address).replace(/&lt;br\s*\/?&gt;/gi, '<br>').replace(/\r?\n/g, '<br>')}</p>` : ''}
-      ${phone ? `<p class="c-contact">Phone : ${esc(phone)}</p>` : ''}
+      ${address ? `<p class="c-contact">${richText(address)}</p>` : ''}
     </header>
     <table class="c-meta">
       <tbody>
@@ -120,7 +127,7 @@ export function renderBillHtml(bill) {
         </tr>
         <tr>
           <td class="c-k">Mobile No</td><td class="c-v">: ${esc(person.mob || '')}</td>
-          <td class="c-k c-up">Referred By</td><td class="c-v c-up">: ${esc(bill.docName || '')}</td>
+          <td class="c-k">Referred By</td><td class="c-v c-up">: ${esc(bill.docName || '')}</td>
         </tr>
       </tbody>
     </table>

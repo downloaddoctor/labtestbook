@@ -1229,6 +1229,9 @@ table.is-loading {
   gap: 10px 12px;
   align-items: start;
 }
+#bill-form .span-1 {
+  grid-column: span 1;
+}
 #bill-form .span-2 {
   grid-column: span 2;
 }
@@ -1702,6 +1705,11 @@ table.is-loading {
 .print-receipt .pr-merchant .pr-table td {
   border: 0.15mm solid #000;
   padding: 0.7mm 1.2mm;
+}
+.print-receipt .pr-merchant .pr-table tfoot td.m-total {
+  font-weight: 700;
+  font-size: 8.5pt;
+  text-align: right;
 }
 .print-receipt .pr-merchant .pr-table thead th {
   background: #e8e8e8;

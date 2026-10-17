@@ -24,7 +24,6 @@ let currentTests = [];
 let editingId = null;
 let _company = '';
 let _companyAddress = '';
-let _companyPhone = '';
 let _loadedOriginal = null;      // hydrated bill when editing
 let _loadedPins = [];            // original pins [{itemId,itemV,hid}]
 let _formInitialized = false;
@@ -327,7 +326,6 @@ function renderPreview() {
     docName: selText('bill-doc'),
     companyName: _company,
     companyAddress: _companyAddress,
-    companyPhone: _companyPhone,
     person: {
       name: el('bill-cust-name') ? el('bill-cust-name').value.trim().toUpperCase() : '',
       mob: el('bill-cust-mob') ? el('bill-cust-mob').value.trim() : '',
@@ -947,7 +945,6 @@ async function doPrint() {
     docName: selText('bill-doc'),
     companyName: _company,
     companyAddress: _companyAddress,
-    companyPhone: _companyPhone,
     person: { name: meta.name.toUpperCase(), mob: meta.mob, age: meta.age, gender: meta.gender },
     payment: meta.payment,
     cust_total: sub,
@@ -1122,7 +1119,6 @@ export async function mount() {
   off = bindOff();
   _company = await db.getCompanyName();
   _companyAddress = await db.getCompanyAddress();
-  _companyPhone = await db.getCompanyPhone();
   syncCtcVisibility();
   wire();
   if (editingId) renderBillTests();
