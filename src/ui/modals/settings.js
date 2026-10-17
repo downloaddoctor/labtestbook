@@ -27,7 +27,7 @@ defineModal('settings', {
   enterSubmits: true,
   body: () =>
     '<label class="auth-field">Company name (printed on bills) <input id="settings-company" type="text" maxlength="60" placeholder="Lab Name" /></label>' +
-    '<label class="auth-field">Address (printed under the name) <input id="settings-address" type="text" maxlength="160" placeholder="Address" /></label>' +
+    '<label class="auth-field">Address (printed under the name) <textarea id="settings-address" rows="3" maxlength="160" placeholder="Address (Enter = new line)"></textarea></label>' +
     '<label class="auth-field">Phone (printed under the address) <input id="settings-phone" type="text" maxlength="60" placeholder="Mob No" /></label>' +
     '<label class="auth-field">Default lab (Affiliated By) <select id="settings-default-lab"></select></label>' +
     '<label class="auth-field">Default doctor (Referred By) <select id="settings-default-doctor"></select></label>',

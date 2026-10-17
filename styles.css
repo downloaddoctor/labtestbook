@@ -1610,17 +1610,28 @@ table.is-loading {
 }
 
 .print-receipt .pr-company {
+  font-weight: 900 !important;
+  -webkit-text-stroke: 0.3pt #000;
+  paint-order: stroke fill;
+}
+.print-receipt .pr-company {
   margin: 0 0 0.5mm 0;
+  text-transform: uppercase;
   text-align: center;
-  font-size: 14pt;
+  font-size: 17pt;
   font-weight: 700;
   letter-spacing: 0.3pt;
 }
 .print-receipt .pr-diagnosed {
   margin: 0;
   text-align: center;
-  font-size: 7.5pt;
-  color: #222;
+  font-size: 9pt;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+}
+.print-receipt .c-up {
+  text-transform: uppercase;
 }
 .print-receipt .pr-row2 {
   display: flex;
@@ -1694,7 +1705,7 @@ table.is-loading {
 }
 .print-receipt .pr-merchant .pr-table thead th {
   background: #e8e8e8;
-  text-transform: none;
+  text-transform: uppercase;
   letter-spacing: 0;
   font-size: 8pt;
   -webkit-print-color-adjust: exact;
@@ -1740,16 +1751,22 @@ table.is-loading {
   margin: 0 0 1mm;
 }
 .pr-customer .c-company {
+  font-weight: 900 !important;
+  -webkit-text-stroke: 0.3pt #000;
+  paint-order: stroke fill;
+}
+.pr-customer .c-company {
   margin: 0;
-  font-size: 12pt;
+  font-size: 19pt;
   font-weight: 700;
   letter-spacing: 0.3pt;
   text-transform: uppercase;
 }
 .pr-customer .c-contact {
-  margin: 0.3mm 0 0;
-  font-size: 6.5pt;
-  color: #222;
+  margin: 0.5mm 0 0;
+  font-size: 9pt;
+  font-weight: 600;
+  color: #000;
 }
 /* Meta block: 4 cells per row (label | value | label | value), 3 rows.
    Only HORIZONTAL row rules — no vertical borders — matching the reference.
@@ -1818,7 +1835,10 @@ table.is-loading {
 .print-receipt .pr-customer .pr-table thead th {
   border-top: 0.15mm solid #000;
   border-bottom: 0.15mm solid #000;
-  background: transparent;
+  background: #e8e8e8;
+  text-transform: uppercase;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
 }
 .print-receipt .pr-customer .pr-table .c-sr {
   width: 10mm;
@@ -3094,13 +3114,18 @@ body.auth-locked {
   color: var(--muted);
 }
 .auth-field input,
-.auth-field select {
+.auth-field select,
+.auth-field textarea {
   padding: 8px 10px;
   border: 1px solid var(--line);
   border-radius: 6px;
   font: inherit;
   background: var(--bg);
   color: var(--ink);
+}
+.auth-field textarea {
+  resize: vertical;
+  min-height: 56px;
 }
 .auth-submit {
   margin-top: 4px;

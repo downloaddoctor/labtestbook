@@ -71,6 +71,7 @@ export function renderBillHtml(bill) {
 
   const custTotal = money(bill.cust_total || 0);
   const discAmt = money(bill.disc_amt || 0);
+  const hasDisc = Number(bill.disc_amt || 0) > 0;
   const grandTotal = money(bill.grand_total != null ? bill.grand_total : bill.cust_total || 0);
 
   // ✓ before the Balance Amount when the bill is paid (Cash / UPI). Reference
@@ -90,7 +91,7 @@ export function renderBillHtml(bill) {
       <span>Date: ${esc(fmtDt(bill.datetime))}</span>
     </div>
     <div class="pr-row2">
-      <span>Name: ${esc(person.name || '')}</span>
+      <span>Patient Name: ${esc(person.name || '')}</span>
     </div>
     <div class="pr-row2">
       <span>Age: ${esc(person.age != null && person.age !== '' ? person.age + ' Years' : '')}</span>
@@ -104,7 +105,7 @@ export function renderBillHtml(bill) {
   <section class="pr-copy pr-customer">
     <header class="c-head">
       <h1 class="c-company">${esc(company)}</h1>
-      ${address ? `<p class="c-contact">${esc(address)}</p>` : ''}
+      ${address ? `<p class="c-contact">${esc(address).replace(/&lt;br\s*\/?&gt;/gi, '<br>').replace(/\r?\n/g, '<br>')}</p>` : ''}
       ${phone ? `<p class="c-contact">Phone : ${esc(phone)}</p>` : ''}
     </header>
     <table class="c-meta">
@@ -119,7 +120,7 @@ export function renderBillHtml(bill) {
         </tr>
         <tr>
           <td class="c-k">Mobile No</td><td class="c-v">: ${esc(person.mob || '')}</td>
-          <td class="c-k">Referred By</td><td class="c-v">: ${esc(bill.docName || '')}</td>
+          <td class="c-k c-up">Referred By</td><td class="c-v c-up">: ${esc(bill.docName || '')}</td>
         </tr>
       </tbody>
     </table>
@@ -129,9 +130,9 @@ export function renderBillHtml(bill) {
     </table>
     <table class="c-totals">
       <tbody>
-        <tr><td class="c-k" colspan="2">Total Test Amount</td><td class="c-v">${esc(custTotal)}</td></tr>
-        <tr><td class="c-k" colspan="2">Discount Amount</td><td class="c-v">${esc(discAmt)}</td></tr>
-        <tr class="c-tot-grand"><td class="c-k" colspan="2">Balance Amount</td><td class="c-v">${tick}${esc(grandTotal)}</td></tr>
+        ${hasDisc ? `<tr><td class="c-k" colspan="2">Sub Total</td><td class="c-v">${esc(custTotal)}</td></tr>
+        <tr><td class="c-k" colspan="2">Discount</td><td class="c-v">${esc(discAmt)}</td></tr>` : ''}
+        <tr class="c-tot-grand"><td class="c-k" colspan="2">Grand Total</td><td class="c-v">${tick}${esc(grandTotal)}</td></tr>
       </tbody>
     </table>
   </section>
