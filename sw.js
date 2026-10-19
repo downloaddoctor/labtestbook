@@ -143,6 +143,32 @@ async function writeMeta(key, value) {
   await cache.put(key, new Response(value));
 }
 
+const DEXIE_URL = 'https://unpkg.com/dexie@4.0.11/dist/modern/dexie.mjs';
+const FONTS_CSS_URL =
+  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap';
+
+/* Cache the Inter stylesheet + its font files and the pinned Dexie module so the
+   app boots fully offline after the first install. Must match index.html. */
+async function precacheRuntime() {
+  try {
+    const cache = await openCache(RUNTIME_CACHE);
+    await cache.add(DEXIE_URL).catch(() => { });
+    const res = await fetch(FONTS_CSS_URL);
+    if (!res || !res.ok) return;
+    const css = await res.clone().text();
+    await cache.put(FONTS_CSS_URL, res);
+    const urls = Array.from(new Set(css.match(/https:\/\/fonts\.gstatic\.com\/[^)'"\s]+/g) || []));
+    await Promise.all(
+      urls.map(async (u) => {
+        try {
+          const f = await fetch(u);
+          if (f && f.ok) await cache.put(u, f);
+        } catch { /* best-effort */ }
+      })
+    );
+  } catch { /* best-effort */ }
+}
+
 /* ---------- Install: precache the shell ---------- */
 
 self.addEventListener('install', (event) => {
@@ -152,12 +178,13 @@ self.addEventListener('install', (event) => {
       await Promise.all(
         SHELL_ASSETS.map(async (url) => {
           try {
-            await cache.add(new Request(url, { cache: 'reload' }));
+            await cache.add(new Request(url, { cache: 'no-cache' }));
           } catch {
             /* best-effort: a missing asset shouldn't break install */
           }
         })
       );
+      await precacheRuntime();
       await self.skipWaiting();
     })()
   );
@@ -215,6 +242,7 @@ async function applyUpdate() {
   if (!pending) return false;
 
   const cache = await openCache(SHELL_CACHE);
+  let failed = false;
   await Promise.all(
     SHELL_ASSETS.map(async (url) => {
       try {
@@ -223,14 +251,20 @@ async function applyUpdate() {
         const key = ASSET_VAL_PREFIX + url;
         const prev = await readMeta(key);
         if (prev === val) return;
-        await writeMeta(key, val);
         await cache.add(new Request(url, { cache: 'reload' }));
+        await writeMeta(key, val);
       } catch {
-        /* best-effort */
+        failed = true; // validator not recorded, so the next apply retries this asset
       }
     })
   );
 
+  if (failed) {
+    for (const c of await self.clients.matchAll({ type: 'window' })) {
+      c.postMessage({ type: 'labtestbook-update-failed' });
+    }
+    return false;
+  }
   await writeMeta(SENTINEL_KEY, pending);
   await writeMeta(PENDING_KEY, '');
   const clients = await self.clients.matchAll({ type: 'window' });
