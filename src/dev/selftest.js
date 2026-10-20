@@ -9,6 +9,7 @@ import db from '../core/db.js';
 import backup from '../backup/backup.js';
 import { billRevToLogLine, csvToLog, csvHeaderLine, parseCsvLine } from '../backup/csv.js';
 import { setPrintEnabled } from '../print/printHtml.js';
+import { parseTests } from '../ui/modals/testBulk.js';
 
 const TEST_DB = 'labtestbook_selftest';
 const TEST_LOG = 'labtestbook-selftest.csv';
@@ -1661,6 +1662,59 @@ export async function runSelfTest({ onProgress, router } = {}) {
         rep.check('flowN: summary cards have no NaN/undefined', !/NaN|undefined/.test(sumText));
         const vN = await db.verify();
         rep.check('flowN: verify clean', vN.ok, vN.issues.join(' | '));
+      });
+
+      // ---- Flow O: Bulk Add tests (parser + real modal + stored details).
+      await guard('flowO', async () => {
+        const csv =
+          'Test Code,Test Name,Sample Instruction,Analytical Description,Reporting Time,Corp-JPR Price\n' +
+          'ZZA1,ZZ BULK ONE,2 ml Serum,"Line one, with comma",Same Day,120\n' +
+          'ZZA2,ZZ BULK TWO,2 ml Serum,,Next Day,\n' +
+          'ZZA3,ZZ BULK ONE,2 ml CSF,,5 Day,300';
+        const p = parseTests(csv);
+        rep.eq('flowO: header csv row count', p.rows.length, 3);
+        rep.eq('flowO: name uppercased', p.rows[0].name, 'ZZ BULK ONE');
+        rep.eq('flowO: price column -> merchant price', p.rows[0].buy, 120);
+        rep.eq('flowO: customer price defaults 0', p.rows[0].sell, 0);
+        rep.eq('flowO: code parsed', p.rows[0].code, 'ZZA1');
+        rep.eq('flowO: quoted comma kept in details', p.rows[0].info, 'Line one, with comma');
+        rep.eq('flowO: reporting time parsed', p.rows[0].tat, 'Same Day');
+        rep.eq('flowO: blank price -> 0', p.rows[1].buy, 0);
+        rep.eq('flowO: same name + other price gets sample suffix', p.rows[2].name, 'ZZ BULK ONE (2 ML CSF)');
+        const q = parseTests('ZZP1, 50, 80\nZZP2, 40\nbad,x');
+        rep.eq('flowO: plain lines parsed', q.rows.length, 2);
+        rep.eq('flowO: plain optional price', q.rows[1].sell, 0);
+        rep.eq('flowO: plain price used', q.rows[0].sell, 80);
+        rep.eq('flowO: invalid line reported', q.bad.join(','), '3');
+
+        if (router && router.activateTab) router.activateTab('tests', true);
+        await settle(300);
+        el('test-bulk-btn').click();
+        await waitForDialog('test-bulk-modal', true);
+        rep.check('flowO: Bulk Add opens modal', el('test-bulk-modal').open);
+        setVal(el('modal-bulk-text'), csv);
+        await settle(100);
+        rep.check('flowO: preview shows ready count', /3 ready/.test(el('modal-bulk-info').textContent));
+        el('modal-bulk-save-btn').click();
+        await waitForDialog('test-bulk-modal', false);
+        await waitUntil(async () => (await db.listTests()).some((t) => t.name === 'ZZ BULK TWO'));
+        const all = await db.listTests();
+        const one = all.find((t) => t.name === 'ZZ BULK ONE');
+        rep.check('flowO: tests stored', !!one && all.some((t) => t.name === 'ZZ BULK ONE (2 ML CSF)'));
+        rep.eq('flowO: stored code', one && one.code, 'ZZA1');
+        rep.eq('flowO: stored sample', one && one.sample, '2 ml Serum');
+        rep.eq('flowO: stored tat', one && one.tat, 'Same Day');
+        rep.eq('flowO: stored merchant price', one && one.buy, 120);
+
+        // Re-import: everything is a duplicate, nothing added.
+        el('test-bulk-btn').click();
+        await waitForDialog('test-bulk-modal', true);
+        setVal(el('modal-bulk-text'), csv);
+        el('modal-bulk-save-btn').click();
+        await waitForDialog('test-bulk-modal', false);
+        rep.eq('flowO: re-import adds no duplicates', (await db.listTests()).length, all.length);
+        const vO = await db.verify();
+        rep.check('flowO: verify clean', vO.ok, vO.issues.join(' | '));
       });
 
       // Cleanup: close any dialog left open by the flow drives. The self-test
