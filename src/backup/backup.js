@@ -12,6 +12,7 @@
 import db from '../core/db.js';
 import {
   csvHeaderLine,
+  testHeadLine,
   detailsLine,
   billRevToLogLine,
   personRevToLogLine,
@@ -231,6 +232,14 @@ class Backup {
 
         let payload = '';
         if (this._needsHeader) payload += await this._headerPayload();
+        else if (!this._headUpgraded) {
+          try {
+            const cur = (await this.readLatest(this._dir)) || '';
+            const m = cur.match(/^#head\|tests\|3\|.*$/m);
+            if (m && !m[0].includes('tat:str?')) payload += testHeadLine() + '\n';
+            this._headUpgraded = true;
+          } catch (_) { }
+        }
         for (const entry of batch) {
           const line = formatEntry(entry);
           if (line) payload += line + '\n';

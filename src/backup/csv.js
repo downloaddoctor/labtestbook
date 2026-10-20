@@ -54,6 +54,7 @@ const SCHEMA_TESTS = {
   cols: [
     'id:int', 'v:int', 'name:str', 'sell:num', 'buy:num',
     'hid:int', 'crtAt:epoch', 'revAt:epoch?', 'uId:int?', 'uV:int?',
+    'code:str?', 'sample:str?', 'info:str?', 'tat:str?',
   ],
 };
 
@@ -103,6 +104,12 @@ const KIND_BY_SCHEMA = {
   tests: 'test', labs: 'lab', doctors: 'doctor',
   payments: 'payment', allocations: 'allocation',
 };
+
+// Head line for the tests schema alone. Appended to an existing log whose
+// tests head predates code|sample|info|tat; csvToLog lets the last #head win.
+export function testHeadLine() {
+  return '#head|' + SCHEMA_TESTS.name + '|' + SCHEMA_TESTS.no + '|' + SCHEMA_TESTS.cols.join(CSV_DELIM);
+}
 
 export function csvHeaderLine() {
   const lines = ['#head|schema|schemaNo|columns'];
@@ -333,7 +340,9 @@ export function csvToLog(text) {
       skippedRows.push({ lineNo, reason: 'unknown schemaNo ' + f[0], raw });
       continue;
     }
-    if (f.length - 1 < schema.cols.length) {
+    let need = schema.cols.length;
+    while (need > 0 && schema.cols[need - 1].nullable) need--;
+    if (f.length - 1 < need) {
       skippedRows.push({ lineNo, reason: `short row (${f.length - 1} fields, expected ${schema.cols.length})`, raw });
       continue;
     }

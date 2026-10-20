@@ -73,6 +73,7 @@ const SHELL_ASSETS = [
   './src/ui/modals/restorePicker.js',
   './src/ui/modals/revisions.js',
   './src/ui/modals/settings.js',
+  './src/ui/modals/testBulk.js',
   './src/ui/modals/testEdit.js',
   './src/ui/modals/textView.js',
   './src/ui/modals/update.js',

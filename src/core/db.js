@@ -374,11 +374,16 @@ class DB {
   getTest(id) {
     return this._db.tests.get(Number(id));
   }
-  async addTest({ name, sell, buy }) {
+  async addTest({ name, sell, buy, code, sample, info, tat }) {
+    const s = (v) => (v == null ? '' : String(v).trim());
     const rec = {
       name: normName(name),
       sell: Number(sell) || 0,
       buy: Number(buy) || 0,
+      code: s(code),
+      sample: s(sample),
+      info: s(info),
+      tat: s(tat),
       hid: 0,
     };
     const id = await this._db.tests.add(rec);
@@ -386,15 +391,21 @@ class DB {
     this._invalidateTests();
     return { ...rec, id };
   }
-  async updateTest({ id, name, sell, buy }) {
+  async updateTest({ id, name, sell, buy, code, sample, info, tat }) {
+    const cur = await this._db.tests.get(Number(id));
+    // undefined = keep the stored value; anything else replaces it.
+    const keep = (v, k) => (v === undefined ? (cur && cur[k]) || '' : v == null ? '' : String(v).trim());
     const patch = {
       name: normName(name),
       sell: Number(sell) || 0,
       buy: Number(buy) || 0,
+      code: keep(code, 'code'),
+      sample: keep(sample, 'sample'),
+      info: keep(info, 'info'),
+      tat: keep(tat, 'tat'),
       hid: 0,
     };
-    const cur = await this._db.tests.get(Number(id));
-    if (cur && isNoop(cur, patch, ['name', 'sell', 'buy'])) return { ...cur, id: Number(id) };
+    if (cur && isNoop(cur, patch, ['name', 'sell', 'buy', 'code', 'sample', 'info', 'tat'])) return { ...cur, id: Number(id) };
     await this._db.tests.update(Number(id), patch);
     await this._appendCatalogRev('tests', Number(id), patch);
     this._invalidateTests();

@@ -241,6 +241,10 @@ export const restoreMethods = {
       if (table === 'tests') {
         rev.sell = op.sell != null ? op.sell : 0;
         rev.buy = op.buy != null ? op.buy : 0;
+        rev.code = op.code || '';
+        rev.sample = op.sample || '';
+        rev.info = op.info || '';
+        rev.tat = op.tat || '';
       }
       await revs.add(rev);
     }
@@ -253,6 +257,10 @@ export const restoreMethods = {
       if (table === 'tests') {
         row.sell = newest.sell || 0;
         row.buy = newest.buy || 0;
+        row.code = newest.code || '';
+        row.sample = newest.sample || '';
+        row.info = newest.info || '';
+        row.tat = newest.tat || '';
       }
       await db[table].put(row);
     }

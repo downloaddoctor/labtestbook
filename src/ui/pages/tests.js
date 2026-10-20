@@ -23,7 +23,13 @@ async function render() {
   tbody.replaceChildren();
   const q = (el('test-search')?.value || '').toLowerCase();
   const all = await db.listTests();
-  const visible = all.filter((t) => !q || t.name.toLowerCase().includes(q));
+  const visible = all.filter(
+    (t) =>
+      !q ||
+      t.name.toLowerCase().includes(q) ||
+      String(t.code || '').toLowerCase().includes(q) ||
+      String(t.sample || '').toLowerCase().includes(q)
+  );
 
   const emptyEl = el('tests-empty');
   const countEl = el('tests-count');
@@ -46,11 +52,20 @@ async function render() {
     tr.className = 'row-click test-row';
     tr.dataset.id = String(test.id);
     tr.dataset.index = String(i);
+    tr.dataset.name = test.name;
     tr.setAttribute('role', 'button');
     tr.setAttribute('aria-label', `Test ${test.name}, price ${money(test.sell)}`);
     if (nav && i === nav.getActive()) tr.classList.add('active');
     const tdName = document.createElement('td');
     tdName.textContent = test.name;
+    const hint = [test.code, test.sample, test.tat].filter(Boolean).join(' · ');
+    if (hint) {
+      const sub = document.createElement('div');
+      sub.className = 'hint';
+      sub.textContent = hint;
+      tdName.appendChild(sub);
+    }
+    if (test.info) tr.title = test.info;
     const tdC = document.createElement('td');
     tdC.textContent = money(test.sell);
     const tdM = document.createElement('td');
@@ -94,6 +109,12 @@ function wireList() {
   });
 
   off.on(el('test-add-btn'), 'click', () => openModal());
+  off.on(el('test-bulk-btn'), 'click', async () => {
+    await openModalUI('testBulk');
+    await render();
+    const s = el('test-search');
+    if (s) s.focus();
+  });
 
   const tbody = document.querySelector('#test-table tbody');
   off.on(tbody, 'click', (e) => {
@@ -109,7 +130,7 @@ export async function mount() {
   off = bindOff();
   wireList();
   registerAction('test-enter', (row) => openModal(Number(row.dataset.id)));
-  registerAction('test-delete', (row) => confirmDelete(Number(row.dataset.id), row.cells[0] ? row.cells[0].textContent : ''));
+  registerAction('test-delete', (row) => confirmDelete(Number(row.dataset.id), row.dataset.name || ''));
   registerAction('test-history', (row) =>
     import('../revisions.js').then(({ openRevisions }) => openRevisions('test', Number(row.dataset.id)))
   );

@@ -29,8 +29,12 @@ defineModal('testEdit', {
   body: () =>
     '<input type="hidden" id="modal-test-id" />' +
     '<label class="modal-field">Name <input type="text" id="modal-test-name" required maxlength="80" autocomplete="off" /></label>' +
-    '<label class="modal-field">Price <input type="number" id="modal-test-customer-price" step="0.01" min="0" required /></label>' +
-    '<label class="modal-field">Merchant Price <input type="number" id="modal-test-merchant-price" step="0.01" min="0" required /></label>',
+    '<label class="modal-field">Price <input type="number" id="modal-test-customer-price" step="0.01" min="0" /></label>' +
+    '<label class="modal-field">Merchant Price <input type="number" id="modal-test-merchant-price" step="0.01" min="0" required /></label>' +
+    '<label class="modal-field">Code <input type="text" id="modal-test-code" maxlength="40" autocomplete="off" /></label>' +
+    '<label class="modal-field">Sample <input type="text" id="modal-test-sample" maxlength="300" autocomplete="off" /></label>' +
+    '<label class="modal-field">Reporting time <input type="text" id="modal-test-tat" maxlength="40" autocomplete="off" /></label>' +
+    '<label class="modal-field">Details <textarea id="modal-test-info" rows="4" style="width:100%"></textarea></label>',
   footer: (d) => [
     {
       label: 'Delete',
@@ -57,11 +61,18 @@ defineModal('testEdit', {
       async onClick(ctx) {
         const id = ctx.$('#modal-test-id').value;
         const name = ctx.$('#modal-test-name').value.trim();
-        const cp = parseFloat(ctx.$('#modal-test-customer-price').value);
+        const cpRaw = parseFloat(ctx.$('#modal-test-customer-price').value);
+        const cp = isNaN(cpRaw) ? 0 : cpRaw;
         const mp = parseFloat(ctx.$('#modal-test-merchant-price').value);
         if (!name || isNaN(cp) || isNaN(mp)) return;
-        if (id) await db.updateTest({ id: Number(id), name, sell: cp, buy: mp });
-        else await db.addTest({ name, sell: cp, buy: mp });
+        const det = {
+          code: ctx.$('#modal-test-code').value,
+          sample: ctx.$('#modal-test-sample').value,
+          tat: ctx.$('#modal-test-tat').value,
+          info: ctx.$('#modal-test-info').value,
+        };
+        if (id) await db.updateTest({ id: Number(id), name, sell: cp, buy: mp, ...det });
+        else await db.addTest({ name, sell: cp, buy: mp, ...det });
         toast(id ? 'Test updated.' : 'Test added.', 'ok');
         ctx.close('saved');
       },
@@ -79,11 +90,19 @@ defineModal('testEdit', {
       ctx.$('#modal-test-name').value = test.name;
       ctx.$('#modal-test-customer-price').value = test.sell;
       ctx.$('#modal-test-merchant-price').value = test.buy;
+      ctx.$('#modal-test-code').value = test.code || '';
+      ctx.$('#modal-test-sample').value = test.sample || '';
+      ctx.$('#modal-test-tat').value = test.tat || '';
+      ctx.$('#modal-test-info').value = test.info || '';
     } else {
       ctx.$('#modal-test-id').value = '';
       ctx.$('#modal-test-name').value = '';
       ctx.$('#modal-test-customer-price').value = '';
       ctx.$('#modal-test-merchant-price').value = '';
+      ctx.$('#modal-test-code').value = '';
+      ctx.$('#modal-test-sample').value = '';
+      ctx.$('#modal-test-tat').value = '';
+      ctx.$('#modal-test-info').value = '';
     }
     const n = ctx.$('#modal-test-name');
     n.focus();

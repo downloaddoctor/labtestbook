@@ -12,6 +12,7 @@ import './settings.js';
 import './textView.js';
 import './restorePicker.js';
 import './testEdit.js';
+import './testBulk.js';
 import './catalogEdit.js';
 import './billView.js';
 import './deleteRequests.js';

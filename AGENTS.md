@@ -31,7 +31,7 @@ MODULES
  src/core/norm.js — Normalizers for name (UPPERCASE), mobile, billNo, payment
  src/core/time.js — Time formatting utilities (fixed TZ offset, day/month bounds)
  src/core/util.js — Debounce utility
- src/core/version.js — APP_VERSION constant (19)
+ src/core/version.js — APP_VERSION constant (20)
  src/core/tabLock.js — Web Locks API single-tab guard
  src/core/store.js — LocalStorage wrapper with namespace
  src/core/money.js — money/money0 formatters (2-dp, whole-rupee)
@@ -51,10 +51,10 @@ MODULES
  src/ui/pages/bill.js — Bill creation/editing, test selection, discount logic, print. Admin-only CTC button (#bill-discount-ctc, hidden for non-admins) in the discount row sets ₹ to maxDiscount (customer pays cost-to-cost, zero margin); clampDiscountToCtc() caps the ₹ field + applyPercentToAmount + save for admins so discount never exceeds CTC
  src/ui/pages/bills.js — Delete: admin deletes directly (confirm); plain user gets 'Request delete' (prompt reason -> db.requestBillDelete); admin-only 'Delete requests' button (#bills-requests, pending count) opens openModal('deleteRequests'). Row click -> openModal('billView', {bill, onAction}); billAction dispatches print/payment/edit/delete/history to the existing helpers (billPayment holds the receive/payment flow). Bills list for ONE day: day-cursor pager (bills-prev-day/next-day/today, bills-day-label = date input). Payment badge 3-state: Settled, Partial, Unpaid; derived from billOutstanding.
  src/ui/pages/patients.js — Patients list, search, pending dues, history, family head picker; patient timeline via openModal('patientView', {id, onBeforeShow, onClose}); receive-payment/refund-advance via familyPay modals; bill timeline badge shows Settled/Partial/Unpaid
- src/ui/modals/ — generic modal system; modal.js = shell (defineModal(name, cfg) + openModal(name, data) -> Promise<close value|null>, built lazily, tab-independent). cfg: id, closeId, title, sub, wide, enterSubmits, header, body, footer[], onOpen, onClose, onKey. ctx = {el, data, body, $, close, setTitle, setSub, render, s}. Files: patientView.js (patient timeline), payment.js (bill payment picker), familyMoney.js (familyPay/familyRefund), userNew.js, settings.js (company name + sub heading + default lab/doctor; Export/Import JSON, lab/doctor matched by name), textView.js (log + selfTest), restorePicker.js, update.js, testEdit.js (modal-test-*), catalogEdit.js (modal-catalog-*), billView.js, deleteRequests.js, revisions.js. index.js imports every file and re-exports openModal/defineModal/isModalOpen. index.html now carries NO <dialog> markup.
+ src/ui/modals/ — generic modal system; modal.js = shell (defineModal(name, cfg) + openModal(name, data) -> Promise<close value|null>, built lazily, tab-independent). cfg: id, closeId, title, sub, wide, enterSubmits, header, body, footer[], onOpen, onClose, onKey. ctx = {el, data, body, $, close, setTitle, setSub, render, s}. Files: patientView.js (patient timeline), payment.js (bill payment picker), familyMoney.js (familyPay/familyRefund), userNew.js, settings.js (company name + sub heading + default lab/doctor; Export/Import JSON, lab/doctor matched by name), textView.js (log + selfTest), restorePicker.js, update.js, testEdit.js (modal-test-*; price optional, blank -> 0), testBulk.js (modal-bulk-*; bulk add tests from pasted text/CSV file: header mode (Test Name + '*Price' col -> merchant price, customer price 0; same name + different price -> name gets '(sample)' suffix) or plain lines name, merchant price, price optional; quote-aware multi-line CSV; parseTests exported; dup names skipped; opened from #test-bulk-btn on Tests page), catalogEdit.js (modal-catalog-*), billView.js, deleteRequests.js, revisions.js. index.js imports every file and re-exports openModal/defineModal/isModalOpen. index.html now carries NO <dialog> markup.
  src/ui/familyPay.js — thin wrapper over the familyPay/familyRefund modals; receiveFamilyPayment(person) -> Promise<bool>; also addFamilyAdvance, refundFamilyAdvance, receiveBillPayment; used by patients.js + ledger.js + bills.js
  src/ui/pages/ledger.js — Row click: whole-lab -> openForPerson (member -> head, family scope); family scope -> bill with dues opens Receive payment; family scope shows head + member cards (#ledger-family, renderFamily). Family scope = head + members (ledgerForFamily, familyBills). Ledger: header = family scope chip row (#ledger-scope, only in family view, ✕ Whole lab) + .ledger-toolbar; layout top-down: scope row (#ledger-scope: name chip, ✕ Whole lab, Show/Hide all-time button on the right) -> family cards -> all-time summary (#ledger-summary) -> .ledger-toolbar; top admin summary (db.ledgerOverview -> cards Sales/Money in hand/To collect/Profit/Dues by age/Top dues; .admin-sum CSS; hidden by default, toggle button "Show all-time"), period cards (#ledger-period, .admin-sum: Sales/Money in/To collect/Profit + 3 flow trees How sales became money/Where the money came and went/How profit is made; always visible, built in render()), day/week/month/year pager (Earlier/Later + #ledger-page-hint period input: date/week/month/number by mode, change jumps to latest period at or before pick). Table cols: When/What happened/Money received/Unpaid/Lab cost/Profit. Scope: whole lab or one person. Uses .admin-sum CSS.
- src/ui/pages/tests.js — Test catalog page (customer + merchant price); edit via openModal('testEdit', {id}) from modals/index.js
+ src/ui/pages/tests.js — Test catalog page (customer + merchant price; name cell shows code · sample · tat hint, row title = info; search matches name/code/sample; row.dataset.name = plain name; bill.js typeahead matches name/code and shows hint); edit via openModal('testEdit', {id}) from modals/index.js
  src/ui/pages/labs.js, doctors.js — thin catalog pages via createCatalogPage (catalog.js)
  src/ui/pages/catalog.js — createCatalogPage(cfg): shared name-only catalog UX; edit via openModal('catalogEdit', {kind, id, labels, api, onDelete})
  src/ui/pages/users.js — User management (admin); new-user via openModal('userNew')
@@ -73,7 +73,7 @@ ARCHITECTURE
  Modal system: every dialog is built by src/ui/modals/modal.js at defineModal() time and opened from any page/tab via openModal(name, data). No tab or page owns a modal; index.html carries no <dialog> markup.
 
 SCHEMA
- DB: 'labtestbook' (Dexie v10; APP_VERSION 19 in core/version.js)
+ DB: 'labtestbook' (Dexie v10; APP_VERSION 20 in core/version.js)
  tables (projection + revision stores):
   users: ++id, &username, role, disabled
   userRevs: [id+v], id, v, username, role, disabled, crtAt, revAt
@@ -87,7 +87,7 @@ SCHEMA
   billsProj: id, pId, crtAt, hid, [pId+crtAt], [hid+crtAt], [hid+payment]
   billsRevs: [id+v], id, v, labId, labV, docId, docV, pId, pV, datetime, items, disc_amt, cust_total, merch_total, cust_payable, grand_total, payment, hid, crtAt, revAt, uId, uV
   tests: ++id, name, hid
-  testRevs: [id+v], id, v, name, sell, buy, hid, crtAt, revAt, uId, uV
+  testRevs: [id+v], id, v, name, sell, buy, hid, crtAt, revAt, uId, uV  # plus unindexed code, sample, info, tat (strings, '' when unset); also on tests rows; CSV tests schema (no 3) appends code|sample|info|tat; trailing nullable cols may be absent in old rows; backup.js appends testHeadLine() once to an older log (last #head wins)
   labs: ++id, name, hid
   labRevs: [id+v], id, v, name, hid, crtAt, revAt, uId, uV
   doctors: ++id, name, hid

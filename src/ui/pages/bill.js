@@ -134,7 +134,7 @@ async function renderTestSuggest(q) {
   const chosen = new Set(currentTests.filter((t) => !t.hid).map((t) => t.name));
   const ql = query.toLowerCase();
   const matches = tests
-    .filter((t) => !chosen.has(t.name) && t.name.toLowerCase().includes(ql))
+    .filter((t) => !chosen.has(t.name) && (t.name.toLowerCase().includes(ql) || String(t.code || '').toLowerCase().includes(ql)))
     .slice(0, 8);
   renderTestSuggestList(ul, matches);
 }
@@ -176,7 +176,14 @@ function testSuggestRow(t) {
   price.className = 's-ago';
   price.textContent = money(t.sell);
   main.append(name, price);
-  return main;
+  const hint = [t.code, t.sample, t.tat].filter(Boolean).join(' · ');
+  if (!hint) return main;
+  const sub = document.createElement('div');
+  sub.className = 's-sub';
+  sub.textContent = hint;
+  const frag = document.createDocumentFragment();
+  frag.append(main, sub);
+  return frag;
 }
 
 function renderTestSuggestList(ul, tests) {
@@ -223,7 +230,7 @@ async function onTestInputKey(e) {
   const tests = await db.listTests();
   const chosen = new Set(currentTests.filter((t) => !t.hid).map((t) => t.name));
   const ql = q.toLowerCase();
-  const hit = tests.find((t) => t.name.toLowerCase().includes(ql) && !chosen.has(t.name));
+  const hit = tests.find((t) => (t.name.toLowerCase().includes(ql) || String(t.code || '').toLowerCase().includes(ql)) && !chosen.has(t.name));
   if (hit) await addTestToBill(hit);
   else toast('No matching test.', 'warn');
 }
